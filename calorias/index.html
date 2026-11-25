@@ -1,0 +1,4238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NutriLens AI — Trazabilidad Calórica Inteligente</title>
+  <style>
+    /* =========================================================================
+       VARIABLES DE DISEÑO Y TEMA (CLARO / OSCURO) - 100% CSS NATIVO EMBEBIDO
+       ========================================================================= */
+    :root {
+      --bg-page: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F1F5F9;
+      --bg-input: #F8FAFC;
+      --text-main: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #94A3B8;
+      --border-color: #E2E8F0;
+      --border-strong: #CBD5E1;
+
+      --emerald-50: #ECFDF5;
+      --emerald-100: #D1FAE5;
+      --emerald-200: #A7F3D0;
+      --emerald-500: #10B981;
+      --emerald-600: #059669;
+      --emerald-700: #047857;
+
+      --blue-50: #EFF6FF;
+      --blue-500: #3B82F6;
+      --blue-600: #2563EB;
+
+      --amber-50: #FFFBEB;
+      --amber-100: #FEF3C7;
+      --amber-500: #F59E0B;
+      --amber-600: #D97706;
+      --amber-800: #92400E;
+
+      --rose-50: #FFF1F2;
+      --rose-500: #F43F5E;
+      --rose-600: #E11D48;
+
+      --indigo-50: #EEF2FF;
+      --indigo-600: #4F46E5;
+
+      --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.18);
+
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+    }
+
+    html.dark {
+      --bg-page: #020617;
+      --bg-card: #0F172A;
+      --bg-subtle: #1E293B;
+      --bg-input: #1E293B;
+      --text-main: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-muted: #64748B;
+      --border-color: #1E293B;
+      --border-strong: #334155;
+
+      --emerald-50: rgba(16, 185, 129, 0.14);
+      --emerald-100: rgba(16, 185, 129, 0.22);
+      --emerald-200: rgba(16, 185, 129, 0.35);
+      --emerald-500: #10B981;
+      --emerald-600: #10B981;
+      --emerald-700: #34D399;
+
+      --blue-50: rgba(59, 130, 246, 0.15);
+      --amber-50: rgba(245, 158, 11, 0.15);
+      --amber-100: rgba(245, 158, 11, 0.24);
+      --amber-800: #FCD34D;
+      --rose-50: rgba(244, 63, 94, 0.15);
+      --indigo-50: rgba(99, 102, 241, 0.16);
+      --indigo-600: #818CF8;
+
+      --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 20px 44px rgba(0, 0, 0, 0.7);
+    }
+
+    /* =========================================================================
+       RESET Y BASE RESPONSIVA
+       ========================================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    button, input, select, textarea, label {
+      font-family: inherit;
+      touch-action: manipulation;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    svg {
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* =========================================================================
+       ENCABEZADO SUPERIOR
+       ========================================================================= */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .header-inner {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 16px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #10B981, #0D9488);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .brand-title span {
+      color: var(--emerald-500);
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-profile-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      background-color: var(--emerald-50);
+      border: 1px solid var(--emerald-200);
+      color: var(--emerald-700);
+      font-size: 12px;
+      font-weight: 700;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+
+    .btn-profile-pill:active {
+      transform: scale(0.97);
+    }
+
+    .btn-icon-square {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-icon-square:hover {
+      background-color: var(--border-color);
+    }
+
+    /* =========================================================================
+       CONTENEDOR PRINCIPAL Y TARJETAS
+       ========================================================================= */
+    .main-container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 18px 16px 96px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* =========================================================================
+       BARRA DE NAVEGACIÓN DE FECHA
+       ========================================================================= */
+    .date-bar {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .date-nav-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .date-arrow-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .date-arrow-btn:hover {
+      background-color: var(--border-color);
+    }
+
+    .date-input {
+      background-color: var(--bg-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 7px 11px;
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .date-right-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-today {
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      background-color: var(--emerald-50);
+      color: var(--emerald-700);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--emerald-200);
+    }
+
+    .date-human-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* =========================================================================
+       PANEL DIARIO: ANILLO DE CALORÍAS + MACROS
+       ========================================================================= */
+    .dashboard-top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .goal-badges-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-goal {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+      background-color: var(--emerald-100);
+      color: var(--emerald-700);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-range {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .btn-link-emerald {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--emerald-600);
+      padding: 4px 6px;
+      border-radius: 8px;
+    }
+
+    .btn-link-emerald:hover {
+      background-color: var(--emerald-50);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    @media (min-width: 680px) {
+      .dashboard-grid {
+        grid-template-columns: 220px 1fr;
+        gap: 24px;
+      }
+    }
+
+    .ring-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .ring-wrapper {
+      position: relative;
+      width: 176px;
+      height: 176px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-svg {
+      width: 176px;
+      height: 176px;
+      transform: rotate(-90deg);
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: var(--bg-subtle);
+      stroke-width: 11;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: var(--emerald-500);
+      stroke-width: 11;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.55s ease, stroke 0.3s ease;
+    }
+
+    .ring-center-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .ring-label-top {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .ring-kcal-value {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin: 2px 0;
+    }
+
+    .ring-kcal-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .status-pill {
+      margin-top: 12px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      background-color: var(--emerald-50);
+      color: var(--emerald-700);
+      border: 1px solid var(--emerald-200);
+    }
+
+    .status-pill.warning {
+      background-color: var(--amber-50);
+      color: var(--amber-800);
+      border-color: var(--amber-500);
+    }
+
+    .status-pill.danger {
+      background-color: var(--rose-50);
+      color: var(--rose-600);
+      border-color: var(--rose-500);
+    }
+
+    /* Barras de Macronutrientes */
+    .macros-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .macro-box {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 11px 14px;
+    }
+
+    .macro-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+      font-size: 13px;
+    }
+
+    .macro-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-protein { background-color: var(--blue-500); }
+    .dot-carbs { background-color: var(--amber-500); }
+    .dot-fats { background-color: var(--rose-500); }
+
+    .macro-numbers {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .macro-numbers strong {
+      color: var(--text-main);
+      font-size: 13px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background-color: var(--border-color);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 0.45s ease;
+    }
+
+    .fill-protein { background-color: var(--blue-500); }
+    .fill-carbs { background-color: var(--amber-500); }
+    .fill-fats { background-color: var(--rose-500); }
+
+    /* Mini KPIs corporales debajo de macros */
+    .body-kpis-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .kpi-mini {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 9px 8px;
+      text-align: center;
+    }
+
+    .kpi-mini.highlight {
+      background-color: var(--emerald-50);
+      border-color: var(--emerald-200);
+    }
+
+    .kpi-mini-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .kpi-mini.highlight .kpi-mini-label {
+      color: var(--emerald-700);
+    }
+
+    .kpi-mini-val {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .kpi-mini.highlight .kpi-mini-val {
+      color: var(--emerald-700);
+    }
+
+    /* =========================================================================
+       SELECTOR DE MODO: CON FOTO (IA) VS SIN FOTO (OPCIONES / MANUAL)
+       ========================================================================= */
+    .mode-switcher {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 6px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .mode-tab-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 10px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+
+    .mode-tab-btn:hover {
+      background-color: var(--bg-subtle);
+    }
+
+    .mode-tab-btn.active {
+      background-color: var(--emerald-600);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28);
+    }
+
+    /* Panel Modo Con Foto */
+    .photo-actions-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 600px) {
+      .photo-actions-grid {
+        grid-template-columns: 1.3fr 1fr;
+      }
+    }
+
+    .btn-camera-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, #059669, #10B981);
+      color: #FFFFFF;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.28);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      user-select: none;
+    }
+
+    .btn-camera-primary:active {
+      transform: scale(0.98);
+    }
+
+    .camera-icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .camera-btn-title {
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .camera-btn-sub {
+      font-size: 12px;
+      color: #D1FAE5;
+      margin-top: 2px;
+    }
+
+    .secondary-actions-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-secondary-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 14px 10px;
+      border-radius: var(--radius-lg);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      box-shadow: var(--shadow-xs);
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      user-select: none;
+    }
+
+    .btn-secondary-tile:hover {
+      background-color: var(--bg-subtle);
+    }
+
+    .btn-secondary-tile:active {
+      transform: scale(0.98);
+    }
+
+    /* =========================================================================
+       PANEL MODO SIN FOTO: CATÁLOGO DE OPCIONES COMUNES + BUSCADOR
+       ========================================================================= */
+    .catalog-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .catalog-title {
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .catalog-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .btn-create-custom {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background-color: var(--blue-600);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-create-custom:hover {
+      background-color: var(--blue-500);
+    }
+
+    .search-box-wrap {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .search-icon-pos {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--emerald-500);
+    }
+
+    .category-pills-scroll {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .category-pills-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-pill-btn {
+      padding: 7px 12px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      border: 1px solid transparent;
+      transition: all 0.18s ease;
+    }
+
+    .cat-pill-btn.active {
+      background-color: var(--emerald-600);
+      color: #FFFFFF;
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      max-height: 440px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    @media (min-width: 640px) {
+      .catalog-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .preset-card {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .preset-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .preset-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .preset-portion {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .preset-kcal-tag {
+      padding: 4px 8px;
+      border-radius: 8px;
+      background-color: var(--emerald-100);
+      color: var(--emerald-700);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .preset-macros-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .m-prot { color: var(--blue-600); }
+    .m-carb { color: var(--amber-600); }
+    .m-fat { color: var(--rose-600); }
+
+    .preset-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-preset-add {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      background-color: var(--emerald-600);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .btn-preset-add:hover {
+      background-color: var(--emerald-700);
+    }
+
+    .btn-preset-portion {
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-preset-del-fav {
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      background-color: var(--rose-50);
+      color: var(--rose-600);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* =========================================================================
+       HISTORIAL DE COMIDAS DEL DÍA
+       ========================================================================= */
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .section-heading {
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .select-filter {
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .meals-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 640px) {
+      .meals-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .meal-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .meal-photo-box {
+      position: relative;
+      width: 100%;
+      height: 165px;
+      background-color: var(--bg-subtle);
+    }
+
+    .meal-photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .meal-cat-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .meal-kcal-badge {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background-color: rgba(15, 23, 42, 0.82);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .meal-no-photo-header {
+      padding: 14px 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .meal-no-photo-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .cat-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cat-Desayuno { background-color: var(--amber-100); color: var(--amber-800); }
+    .cat-Almuerzo { background-color: var(--emerald-100); color: var(--emerald-700); }
+    .cat-Cena { background-color: var(--indigo-50); color: var(--indigo-600); }
+    .cat-Snack { background-color: var(--rose-50); color: var(--rose-600); }
+
+    .meal-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .meal-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .meal-name {
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .meal-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .meal-notes {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .meal-tip {
+      font-size: 11px;
+      background-color: var(--emerald-50);
+      color: var(--emerald-700);
+      padding: 7px 10px;
+      border-radius: 10px;
+      line-height: 1.35;
+    }
+
+    .meal-macros-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .macro-chip {
+      padding: 6px 4px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .macro-chip.prot { background-color: var(--blue-50); }
+    .macro-chip.carb { background-color: var(--amber-50); }
+    .macro-chip.fat { background-color: var(--rose-50); }
+
+    .macro-chip-lbl {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .macro-chip.prot .macro-chip-lbl { color: var(--blue-600); }
+    .macro-chip.carb .macro-chip-lbl { color: var(--amber-600); }
+    .macro-chip.fat .macro-chip-lbl { color: var(--rose-600); }
+
+    .macro-chip-val {
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .meal-footer-actions {
+      padding: 9px 14px;
+      background-color: var(--bg-subtle);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn-card-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-card-action.edit {
+      color: var(--text-secondary);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-card-action.delete {
+      color: var(--rose-600);
+      background-color: var(--rose-50);
+    }
+
+    .empty-box {
+      background-color: var(--bg-card);
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius-xl);
+      padding: 36px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .empty-icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: var(--bg-subtle);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+
+    /* =========================================================================
+       MODALES (COMIDA / PERFIL / ELIMINACIÓN)
+       ========================================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background-color: rgba(2, 6, 23, 0.68);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+    }
+
+    @media (min-width: 600px) {
+      .modal-backdrop {
+        align-items: center;
+        padding: 16px;
+      }
+    }
+
+    .modal-dialog {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 540px;
+      max-height: 92vh;
+      border-radius: 24px 24px 0 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    @media (min-width: 600px) {
+      .modal-dialog {
+        border-radius: 24px;
+      }
+      .modal-dialog.wide {
+        max-width: 640px;
+      }
+    }
+
+    .modal-header {
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background-color: var(--bg-card);
+    }
+
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .modal-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .modal-body {
+      padding: 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Vista previa de foto en Modal */
+    .preview-container {
+      position: relative;
+      width: 100%;
+      height: 195px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+    }
+
+    .preview-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .ai-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(2, 6, 23, 0.82);
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      gap: 8px;
+      z-index: 4;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid rgba(16, 185, 129, 0.3);
+      border-top-color: #10B981;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .preview-floating-btns {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      display: flex;
+      gap: 6px;
+      z-index: 3;
+    }
+
+    .btn-overlay-sm {
+      padding: 6px 10px;
+      border-radius: 10px;
+      background-color: rgba(15, 23, 42, 0.85);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .photo-size-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 9px;
+      border-radius: 8px;
+      background-color: rgba(15, 23, 42, 0.78);
+      color: #A7F3D0;
+      font-size: 11px;
+      font-weight: 700;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .btn-abort-ai {
+      margin-top: 6px;
+      padding: 7px 14px;
+      border-radius: 10px;
+      background-color: rgba(244, 63, 94, 0.9);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-abort-ai:hover {
+      background-color: #E11D48;
+    }
+
+    /* Multiplicadores de porción */
+    .multiplier-card {
+      background-color: var(--emerald-50);
+      border: 1px solid var(--emerald-200);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .multiplier-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--emerald-700);
+    }
+
+    .multiplier-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .mult-btn {
+      padding: 7px;
+      border-radius: 9px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--emerald-200);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .mult-btn.active {
+      background-color: var(--emerald-600);
+      color: #FFFFFF;
+      border-color: var(--emerald-600);
+    }
+
+    /* Formularios */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--emerald-500);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    @media (min-width: 540px) {
+      .grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .goal-radio-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    @media (min-width: 560px) {
+      .goal-radio-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .goal-option-card {
+      display: block;
+      padding: 11px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-color);
+      background-color: var(--bg-subtle);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .goal-option-card.selected {
+      border-color: var(--emerald-500);
+      background-color: var(--emerald-50);
+    }
+
+    .goal-opt-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .goal-opt-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+
+    .calc-summary-panel {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .calc-kcal-trio {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .calc-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 6px;
+    }
+
+    .calc-box.primary {
+      background-color: var(--emerald-600);
+      border-color: var(--emerald-600);
+      color: #FFFFFF;
+    }
+
+    .calc-box-lbl {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .calc-box-num {
+      display: block;
+      font-size: 17px;
+      font-weight: 800;
+      margin: 2px 0;
+    }
+
+    .calc-box-unit {
+      font-size: 10px;
+      opacity: 0.8;
+    }
+
+    .range-banner {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 9px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .fav-check-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: var(--radius-md);
+      background-color: var(--amber-50);
+      border: 1px solid var(--amber-100);
+      cursor: pointer;
+    }
+
+    .modal-footer-btns {
+      display: flex;
+      gap: 10px;
+      padding-top: 4px;
+    }
+
+    .btn-modal-cancel {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .btn-modal-submit {
+      flex: 1.4;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background-color: var(--emerald-600);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 6px 16px rgba(5, 150, 105, 0.28);
+    }
+
+    /* Banner aviso API Key / manual + caja rápida de API Key */
+    .ai-notice-banner {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background-color: var(--amber-50);
+      border: 1px solid var(--amber-500);
+      color: var(--amber-800);
+      font-size: 12px;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-inline-amber {
+      align-self: flex-start;
+      padding: 7px 12px;
+      border-radius: 9px;
+      background-color: var(--amber-600);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .api-key-card {
+      background-color: var(--indigo-50);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .api-key-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .api-status-badge {
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .api-status-badge.ok {
+      background-color: var(--emerald-100);
+      color: var(--emerald-700);
+    }
+
+    .api-status-badge.missing {
+      background-color: var(--amber-100);
+      color: var(--amber-800);
+    }
+
+    .api-input-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .btn-sm-solid {
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      background-color: var(--indigo-600);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .btn-sm-ghost {
+      padding: 9px 10px;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .backup-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Toast flotante */
+    .toast-container {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 80;
+      width: 92%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      background-color: #0F172A;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 4px solid #10B981;
+    }
+
+    .toast-item.warning { border-left-color: #F59E0B; }
+    .toast-item.error { border-left-color: #F43F5E; }
+  </style>
+</head>
+<body>
+
+  <!-- Notificaciones Toast -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Inputs ocultos accesibles vinculados por <label for="..."> -->
+  <input type="file" id="input-camera" accept="image/*" capture="environment" class="sr-only" />
+  <input type="file" id="input-gallery" accept="image/*" class="sr-only" />
+  <input type="file" id="input-change-photo" accept="image/*" class="sr-only" />
+
+  <!-- Encabezado -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">NutriLens <span>AI</span></div>
+          <div class="brand-sub">Trazabilidad Calórica Inteligente</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" id="btn-open-profile" class="btn-profile-pill" title="Configurar perfil corporal, API Key y límites calóricos">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/>
+          </svg>
+          <span>Perfil • <strong id="header-kcal-target">2,895</strong> kcal</span>
+        </button>
+
+        <button type="button" id="btn-theme-toggle" class="btn-icon-square" title="Alternar modo claro / oscuro" aria-label="Cambiar tema">
+          <svg id="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+          <svg id="icon-sun" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="main-container">
+
+    <!-- Navegación por Fecha -->
+    <section class="date-bar">
+      <div class="date-nav-group">
+        <button type="button" id="btn-prev-day" class="date-arrow-btn" aria-label="Día anterior">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+        </button>
+        <input type="date" id="date-filter" class="date-input" />
+        <button type="button" id="btn-next-day" class="date-arrow-btn" aria-label="Día siguiente">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="date-right-group">
+        <button type="button" id="btn-today" class="btn-today">Hoy</button>
+        <span id="date-human-label" class="date-human-label"></span>
+      </div>
+    </section>
+
+    <!-- Panel Diario de Calorías y Macronutrientes -->
+    <section class="card">
+      <div class="dashboard-top-bar">
+        <div class="goal-badges-wrap">
+          <span class="badge-goal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+            <span id="dash-goal-badge">Mantenimiento • 2,895 kcal</span>
+          </span>
+          <span id="dash-range-badge" class="badge-range">Rango ideal: 2,745 – 3,045 kcal</span>
+        </div>
+
+        <button type="button" id="btn-edit-profile-dash" class="btn-link-emerald">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+          </svg>
+          <span>Ajustar cuerpo y límites</span>
+        </button>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Anillo SVG de Calorías -->
+        <div class="ring-column">
+          <div class="ring-wrapper">
+            <svg class="ring-svg" width="176" height="176" viewBox="0 0 140 140">
+              <circle class="ring-track" cx="70" cy="70" r="58" />
+              <circle id="calorie-ring-progress" class="ring-progress" cx="70" cy="70" r="58"
+                stroke-dasharray="364.42" stroke-dashoffset="364.42" />
+            </svg>
+            <div class="ring-center-text">
+              <span class="ring-label-top">Consumidas</span>
+              <span id="dash-consumed-kcal" class="ring-kcal-value">0</span>
+              <span class="ring-kcal-sub">de <span id="dash-target-kcal">2,895</span> kcal</span>
+            </div>
+          </div>
+
+          <div id="dash-status-pill" class="status-pill">Te quedan 2,895 kcal disponibles</div>
+        </div>
+
+        <!-- Barras de Macros + KPIs Corporales -->
+        <div class="macros-column">
+          <div class="macro-box">
+            <div class="macro-header">
+              <span class="macro-name"><span class="dot dot-protein"></span>Proteínas</span>
+              <span class="macro-numbers"><strong id="dash-prot-now">0g</strong> / <span id="dash-prot-goal">163g</span></span>
+            </div>
+            <div class="progress-track">
+              <div id="bar-protein" class="progress-fill fill-protein" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="macro-box">
+            <div class="macro-header">
+              <span class="macro-name"><span class="dot dot-carbs"></span>Carbohidratos</span>
+              <span class="macro-numbers"><strong id="dash-carb-now">0g</strong> / <span id="dash-carb-goal">380g</span></span>
+            </div>
+            <div class="progress-track">
+              <div id="bar-carbs" class="progress-fill fill-carbs" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="macro-box">
+            <div class="macro-header">
+              <span class="macro-name"><span class="dot dot-fats"></span>Grasas</span>
+              <span class="macro-numbers"><strong id="dash-fat-now">0g</strong> / <span id="dash-fat-goal">80g</span></span>
+            </div>
+            <div class="progress-track">
+              <div id="bar-fats" class="progress-fill fill-fats" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="body-kpis-row">
+            <div class="kpi-mini">
+              <span class="kpi-mini-label">TMB Basal</span>
+              <span id="kpi-bmr" class="kpi-mini-val">1,868 kcal</span>
+            </div>
+            <div class="kpi-mini">
+              <span class="kpi-mini-label">TDEE Mant.</span>
+              <span id="kpi-tdee" class="kpi-mini-val">2,895 kcal</span>
+            </div>
+            <div class="kpi-mini highlight">
+              <span class="kpi-mini-label">Cuerpo</span>
+              <span id="kpi-body" class="kpi-mini-val">90.5kg • 182cm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Selector de Modo de Registro -->
+    <section>
+      <div class="mode-switcher">
+        <button type="button" id="tab-mode-photo" class="mode-tab-btn active">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>
+          </svg>
+          <span>Con Foto (IA)</span>
+        </button>
+
+        <button type="button" id="tab-mode-manual" class="mode-tab-btn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+          </svg>
+          <span>Sin Foto (Opciones / Manual)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- PANEL 1: CON FOTO (IA) -->
+    <section id="panel-photo-mode" class="photo-actions-grid">
+      <label for="input-camera" class="btn-camera-primary">
+        <div class="camera-icon-circle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>
+          </svg>
+        </div>
+        <div>
+          <div class="camera-btn-title">Tomar Foto de Comida</div>
+          <div class="camera-btn-sub">Analizar calorías con cámara e IA</div>
+        </div>
+      </label>
+
+      <div class="secondary-actions-pair">
+        <label for="input-gallery" class="btn-secondary-tile">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+          </svg>
+          <span>Subir Imagen</span>
+        </label>
+
+        <button type="button" id="btn-shortcut-manual" class="btn-secondary-tile">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
+          </svg>
+          <span>Registrar sin foto</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- PANEL 2: SIN FOTO (OPCIONES COMUNES / MANUAL) -->
+    <section id="panel-manual-mode" class="card hidden">
+      <div class="catalog-header">
+        <div>
+          <h3 class="catalog-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+            </svg>
+            <span>Opciones Comunes sin Fotografía</span>
+          </h3>
+          <p class="catalog-sub">Agrega en 1 clic (+ Agregar), ajusta porción o crea una comida personalizada.</p>
+        </div>
+
+        <button type="button" id="btn-create-custom-meal" class="btn-create-custom">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+          <span>+ Crear Comida Personalizada sin Foto</span>
+        </button>
+      </div>
+
+      <div class="search-box-wrap">
+        <svg class="search-icon-pos" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input type="text" id="catalog-search" class="search-input" placeholder="Buscar plato (ej. huevos, calentado, bandeja, ajiaco, salmón, arepa...)" />
+      </div>
+
+      <div id="catalog-pills" class="category-pills-scroll">
+        <button type="button" class="cat-pill-btn active" data-cat="Todas">Todas (24)</button>
+        <button type="button" class="cat-pill-btn" data-cat="Desayuno">Desayuno</button>
+        <button type="button" class="cat-pill-btn" data-cat="Almuerzo">Almuerzo</button>
+        <button type="button" class="cat-pill-btn" data-cat="Snack">Snack</button>
+        <button type="button" class="cat-pill-btn" data-cat="Cena">Cena</button>
+        <button type="button" class="cat-pill-btn" data-cat="Mis Frecuentes">Mis Frecuentes (<span id="fav-count-lbl">0</span>)</button>
+      </div>
+
+      <div id="catalog-grid" class="catalog-grid"></div>
+    </section>
+
+    <!-- Historial de Comidas del Día -->
+    <section style="display:flex; flex-direction:column; gap:12px;">
+      <div class="history-header">
+        <h2 class="section-heading">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>Historial de Comidas</span>
+        </h2>
+
+        <select id="history-cat-filter" class="select-filter">
+          <option value="Todas">Todas las categorías</option>
+          <option value="Desayuno">Desayuno</option>
+          <option value="Almuerzo">Almuerzo</option>
+          <option value="Snack">Snack</option>
+          <option value="Cena">Cena</option>
+        </select>
+      </div>
+
+      <div id="meals-grid" class="meals-grid"></div>
+
+      <div id="empty-state" class="empty-box hidden">
+        <div class="empty-icon-circle">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+          </svg>
+        </div>
+        <strong style="font-size:15px;">Sin comidas registradas en esta fecha</strong>
+        <p style="font-size:12px; color:var(--text-secondary); max-width:300px;">
+          Toma una foto de tu plato o selecciona una opción del catálogo sin foto para iniciar tu trazabilidad.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       MODAL: REGISTRAR / EDITAR COMIDA (CON FOTO IA O MANUAL / PORCIÓN)
+       ========================================================================= -->
+  <div id="meal-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
+          </svg>
+          <div>
+            <div id="meal-modal-title" class="modal-title">Registrar Comida</div>
+            <div id="meal-modal-subtitle" class="modal-subtitle">Revisa o ajusta los valores nutricionales</div>
+          </div>
+        </div>
+        <button type="button" id="btn-close-meal-modal" class="btn-icon-square" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Vista Previa de Foto + Overlay Cargando IA -->
+        <div id="meal-photo-preview-box" class="preview-container hidden">
+          <img id="modal-preview-img" src="" alt="Vista previa de comida" />
+          <span id="photo-size-badge" class="photo-size-badge hidden"></span>
+          <div id="ai-loading-overlay" class="ai-overlay hidden">
+            <div class="spinner"></div>
+            <strong id="ai-loading-title" style="font-size:14px;">Analizando plato con Gemini AI... (15s)</strong>
+            <span id="ai-loading-sub" style="font-size:12px; color:#CBD5E1;">Calculando calorías, proteínas, carbohidratos y grasas</span>
+            <button type="button" id="btn-cancel-ai-analysis" class="btn-abort-ai">Cancelar análisis</button>
+          </div>
+          <div class="preview-floating-btns">
+            <button type="button" id="btn-reanalyze-ai" class="btn-overlay-sm">Re-analizar IA</button>
+            <label for="input-change-photo" class="btn-overlay-sm">Cambiar foto</label>
+          </div>
+        </div>
+
+        <!-- Banner de aviso cuando falta API Key o falla red/IA, con acceso directo a configurar clave -->
+        <div id="ai-notice-banner" class="ai-notice-banner hidden">
+          <span id="ai-notice-text"></span>
+          <button type="button" id="btn-toggle-inline-key" class="btn-inline-amber">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>
+            </svg>
+            <span>Configurar API Key</span>
+          </button>
+
+          <div id="inline-key-box" class="hidden" style="display:flex; flex-direction:column; gap:7px; padding-top:6px; border-top:1px dashed var(--amber-500);">
+            <span style="font-size:11px; font-weight:700;">Pega tu Gemini API Key gratuita (Google AI Studio):</span>
+            <div class="api-input-row">
+              <input type="password" id="inline-api-key-input" class="form-control" style="font-size:12px; padding:8px 10px;" placeholder="AIzaSy..." />
+              <button type="button" id="btn-inline-key-eye" class="btn-sm-ghost" title="Mostrar/Ocultar">👁</button>
+              <button type="button" id="btn-inline-key-save" class="btn-sm-solid">Guardar y Analizar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multiplicador de Porción (0.5x, 1x, 1.5x, 2x) -->
+        <div id="portion-multiplier-panel" class="multiplier-card hidden">
+          <div class="multiplier-top">
+            <span>Ajustar tamaño de porción</span>
+            <span id="portion-factor-label">Porción estándar (1x)</span>
+          </div>
+          <div class="multiplier-grid">
+            <button type="button" class="mult-btn" data-factor="0.5">0.5x</button>
+            <button type="button" class="mult-btn active" data-factor="1">1x</button>
+            <button type="button" class="mult-btn" data-factor="1.5">1.5x</button>
+            <button type="button" class="mult-btn" data-factor="2">2x</button>
+          </div>
+        </div>
+
+        <form id="meal-form" style="display:flex; flex-direction:column; gap:12px;">
+          <input type="hidden" id="form-meal-id" value="" />
+
+          <div class="form-group">
+            <label class="form-label" for="form-meal-name">Nombre del plato o comida</label>
+            <input type="text" id="form-meal-name" class="form-control" required placeholder="Ej. Bandeja ejecutiva con pechuga y arroz" />
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="form-meal-category">Categoría</label>
+              <select id="form-meal-category" class="form-control">
+                <option value="Desayuno">Desayuno</option>
+                <option value="Almuerzo">Almuerzo</option>
+                <option value="Snack">Snack</option>
+                <option value="Cena">Cena</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="form-meal-time">Hora</label>
+              <input type="time" id="form-meal-time" class="form-control" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-meal-calories">Calorías Totales (kcal)</label>
+            <input type="number" id="form-meal-calories" class="form-control" required min="0" max="5000" step="1" placeholder="520" />
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label" for="form-meal-protein" style="color:var(--blue-600);">Proteínas (g)</label>
+              <input type="number" id="form-meal-protein" class="form-control" min="0" max="500" step="0.5" value="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="form-meal-carbs" style="color:var(--amber-600);">Carbos (g)</label>
+              <input type="number" id="form-meal-carbs" class="form-control" min="0" max="500" step="0.5" value="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="form-meal-fats" style="color:var(--rose-600);">Grasas (g)</label>
+              <input type="number" id="form-meal-fats" class="form-control" min="0" max="300" step="0.5" value="0" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-meal-notes">Ingredientes / Notas de porción</label>
+            <input type="text" id="form-meal-notes" class="form-control" placeholder="Ej. 150g pechuga, 1 taza de arroz, aguacate" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-meal-tip">Consejo Nutricional</label>
+            <input type="text" id="form-meal-tip" class="form-control" placeholder="Observación nutricional breve" />
+          </div>
+
+          <label id="fav-checkbox-container" class="fav-check-box">
+            <input type="checkbox" id="form-save-favorite" style="width:18px; height:18px; accent-color:#059669;" />
+            <div>
+              <strong style="font-size:12px; display:block;">Guardar en "Mis Comidas Frecuentes"</strong>
+              <span style="font-size:11px; color:var(--text-secondary);">Reutilízala en 1 clic sin foto en futuros días.</span>
+            </div>
+          </label>
+
+          <div class="modal-footer-btns">
+            <button type="button" id="btn-cancel-meal-form" class="btn-modal-cancel">Cancelar</button>
+            <button type="submit" class="btn-modal-submit">Guardar Comida</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: MI PERFIL, API KEY, RESPALDO Y METAS CALÓRICAS (MIFFLIN-ST JEOR)
+       ========================================================================= -->
+  <div id="profile-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog wide">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/>
+          </svg>
+          <div>
+            <div class="modal-title">Mi Perfil, IA y Metas Calóricas</div>
+            <div class="modal-subtitle">Cálculo Mifflin-St Jeor, clave Gemini AI y respaldo de datos</div>
+          </div>
+        </div>
+        <button type="button" id="btn-close-profile-modal" class="btn-icon-square" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="profile-form" class="modal-body">
+        <div class="grid-4">
+          <div class="form-group">
+            <label class="form-label" for="prof-sex">Sexo</label>
+            <select id="prof-sex" class="form-control">
+              <option value="male">Masculino</option>
+              <option value="female">Femenino</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prof-age">Edad (años)</label>
+            <input type="number" id="prof-age" class="form-control" required min="14" max="110" step="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prof-height">Altura (cm)</label>
+            <input type="number" id="prof-height" class="form-control" required min="100" max="240" step="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prof-weight">Peso (kg)</label>
+            <input type="number" id="prof-weight" class="form-control" required min="30" max="300" step="0.1" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="prof-activity">Nivel de Actividad Física</label>
+          <select id="prof-activity" class="form-control">
+            <option value="1.2">Sedentario (poco o ningún ejercicio — x1.2)</option>
+            <option value="1.375">Ligero (1-3 días/semana — x1.375)</option>
+            <option value="1.55">Moderada (3-5 días/semana — x1.55)</option>
+            <option value="1.725">Activa (6-7 días/semana — x1.725)</option>
+            <option value="1.9">Muy activa (atleta / trabajo físico intenso — x1.9)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">Objetivo Nutricional</span>
+          <div class="goal-radio-grid" id="goal-options-container">
+            <div class="goal-option-card" data-goal="deficit">
+              <div class="goal-opt-head">
+                <span>Definición</span>
+                <span style="color:var(--amber-600);">-450 kcal</span>
+              </div>
+              <p class="goal-opt-desc">Déficit calórico saludable. Proteína alta (2.0 g/kg).</p>
+            </div>
+
+            <div class="goal-option-card selected" data-goal="maintenance">
+              <div class="goal-opt-head">
+                <span>Mantenimiento</span>
+                <span style="color:var(--emerald-600);">0 kcal</span>
+              </div>
+              <p class="goal-opt-desc">Equilibrio energético y recomposición (1.8 g/kg).</p>
+            </div>
+
+            <div class="goal-option-card" data-goal="surplus">
+              <div class="goal-opt-head">
+                <span>Volumen</span>
+                <span style="color:var(--blue-600);">+300 kcal</span>
+              </div>
+              <p class="goal-opt-desc">Superávit limpio para ganar masa (1.8 g/kg).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultados en tiempo real -->
+        <div class="calc-summary-panel">
+          <div class="calc-kcal-trio">
+            <div class="calc-box">
+              <span class="calc-box-lbl">TMB Basal</span>
+              <span id="prev-bmr" class="calc-box-num">1,868</span>
+              <span class="calc-box-unit">kcal/día</span>
+            </div>
+            <div class="calc-box">
+              <span class="calc-box-lbl">TDEE Mant.</span>
+              <span id="prev-tdee" class="calc-box-num">2,895</span>
+              <span class="calc-box-unit">kcal/día</span>
+            </div>
+            <div class="calc-box primary">
+              <span class="calc-box-lbl">Límite Ideal</span>
+              <span id="prev-target" class="calc-box-num">2,895</span>
+              <span class="calc-box-unit">kcal/día</span>
+            </div>
+          </div>
+
+          <div class="range-banner">
+            <span style="font-weight:700; color:var(--text-secondary);">Rango Saludable (Mín – Máx):</span>
+            <strong style="color:var(--emerald-600);"><span id="prev-min">2,745</span> – <span id="prev-max">3,045</span> kcal</strong>
+          </div>
+
+          <div class="grid-3">
+            <div class="calc-box" style="background:var(--blue-50);">
+              <span class="calc-box-lbl" style="color:var(--blue-600);">Proteínas</span>
+              <span id="prev-prot" class="calc-box-num">163g</span>
+              <span id="prev-prot-sub" class="calc-box-unit">1.8 g/kg</span>
+            </div>
+            <div class="calc-box" style="background:var(--amber-50);">
+              <span class="calc-box-lbl" style="color:var(--amber-600);">Carbos</span>
+              <span id="prev-carb" class="calc-box-num">380g</span>
+              <span id="prev-carb-unit">Energía</span>
+            </div>
+            <div class="calc-box" style="background:var(--rose-50);">
+              <span class="calc-box-lbl" style="color:var(--rose-600);">Grasas</span>
+              <span id="prev-fat" class="calc-box-num">80g</span>
+              <span id="prev-fat-unit">25% kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuración de Inteligencia Artificial (Gemini API Key) -->
+        <div class="api-key-card">
+          <div class="api-key-header">
+            <strong style="font-size:13px; color:var(--indigo-600);">Configuración IA (Gemini API Key)</strong>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
+              <span id="prof-api-status" class="api-status-badge missing">No configurada</span>
+              <span id="prof-model-badge" class="api-status-badge ok hidden">Modelo activo: —</span>
+            </div>
+          </div>
+          <p style="font-size:11px; color:var(--text-secondary); line-height:1.35;">
+            Necesaria para analizar fotos cuando abres la app como archivo local o acceso directo. Obtén tu clave gratuita en
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--indigo-600); font-weight:700; text-decoration:underline;">Google AI Studio</a>.
+          </p>
+          <div class="api-input-row">
+            <input type="password" id="prof-api-key-input" class="form-control" style="font-size:12px; padding:8px 10px;" placeholder="Pega tu Gemini API Key (AIzaSy...)" />
+            <button type="button" id="btn-prof-key-eye" class="btn-sm-ghost" title="Mostrar/Ocultar clave">👁</button>
+            <button type="button" id="btn-prof-key-save" class="btn-sm-solid">Guardar clave</button>
+          </div>
+          <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button type="button" id="btn-prof-key-test" class="btn-sm-ghost" style="font-size:11px; padding:6px 10px;">Probar conexión IA</button>
+            <button type="button" id="btn-prof-key-clear" class="btn-sm-ghost" style="font-size:11px; padding:6px 10px; color:var(--rose-600);">Borrar clave</button>
+          </div>
+        </div>
+
+        <!-- Respaldo y Restauración de Datos JSON -->
+        <div class="form-group">
+          <span class="form-label">Respaldo de Historial (Exportar / Importar JSON)</span>
+          <div class="backup-row">
+            <button type="button" id="btn-export-json" class="btn-sm-ghost" style="text-align:center;">⬇ Exportar Respaldo</button>
+            <label for="input-import-json" class="btn-sm-ghost" style="text-align:center; cursor:pointer;">⬆ Restaurar Respaldo</label>
+            <input type="file" id="input-import-json" accept="application/json,.json" class="sr-only" />
+          </div>
+        </div>
+
+        <div class="modal-footer-btns">
+          <button type="button" id="btn-cancel-profile" class="btn-modal-cancel">Cancelar</button>
+          <button type="submit" class="btn-modal-submit">Guardar y Aplicar Metas</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: CONFIRMAR ELIMINACIÓN
+       ========================================================================= -->
+  <div id="delete-modal" class="modal-backdrop hidden" style="align-items:center; padding:16px;">
+    <div class="modal-dialog" style="max-width:360px; border-radius:24px; padding:22px; text-align:center; gap:14px;">
+      <strong style="font-size:16px;">¿Eliminar esta comida?</strong>
+      <p style="font-size:13px; color:var(--text-secondary);">
+        Se descontará de tus calorías y macronutrientes de este día.
+      </p>
+      <div class="modal-footer-btns">
+        <button type="button" id="btn-cancel-delete" class="btn-modal-cancel">Cancelar</button>
+        <button type="button" id="btn-confirm-delete" class="btn-modal-submit" style="background-color:var(--rose-600); box-shadow:none;">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       JAVASCRIPT VANILLA PURO AUTOCONTENIDO
+       ========================================================================= -->
+  <script>
+    (function () {
+      "use strict";
+
+      /* Clave opcional inyectada por el entorno de ejecución */
+      const ENV_API_KEY = "";
+
+      /* Claves de persistencia en localStorage */
+      const LS_KEYS = {
+        PROFILE: "nutrilens_profile_v3",
+        MEALS: "nutrilens_meals_v3",
+        FAVORITES: "nutrilens_favorites_v3",
+        THEME: "nutrilens_theme_v3",
+        API_KEY: "nutrilens_gemini_api_key",
+        MODEL: "nutrilens_active_model"
+      };
+
+      const FALLBACK_GEMINI_MODELS = [
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-2.5-flash-lite",
+        "gemini-1.5-flash",
+        "gemini-1.5-pro"
+      ];
+
+      /* IndexedDB para almacenamiento robusto de imágenes base64 */
+      const IDB_NAME = "NutriLensDB_v3";
+      const IDB_STORE = "meals";
+
+      /* Perfil inicial pre-cargado (Masculino, 36 años, 182 cm, 90.5 kg, Moderada 1.55, Mantenimiento) */
+      const DEFAULT_PROFILE = {
+        sex: "male",
+        age: 36,
+        height: 182,
+        weight: 90.5,
+        activity: 1.55,
+        goalType: "maintenance"
+      };
+
+      /* Catálogo pre-cargado de 24 comidas comunes y colombianas */
+      const COMMON_MEALS = [
+        /* DESAYUNOS (6) */
+        { id: "c1", name: "Huevos revueltos con arepa y queso", category: "Desayuno", portion: "2 huevos, 1 arepa blanca, 35g queso campesino", calories: 410, protein: 23, carbs: 34, fats: 20, tip: "Buen aporte proteico matutino; acompaña con café sin azúcar." },
+        { id: "c2", name: "Calentado paisa con huevo frito", category: "Desayuno", portion: "1 plato mediano (arroz, frijol, huevo, arepita)", calories: 560, protein: 22, carbs: 68, fats: 21, tip: "Ideal antes de entrenamientos intensos por su carga de carbohidratos." },
+        { id: "c3", name: "Avena en hojuelas con banano y proteína", category: "Desayuno", portion: "60g avena, 1 banano, 1 scoop whey, agua/leche", calories: 430, protein: 32, carbs: 58, fats: 7, tip: "Excelente digestión y liberación sostenida de energía." },
+        { id: "c4", name: "Omelette de 3 huevos con espinaca y pan integral", category: "Desayuno", portion: "3 huevos, espinaca, 2 tajadas pan integral", calories: 420, protein: 26, carbs: 32, fats: 20, tip: "Rico en micronutrientes y proteína de alto valor biológico." },
+        { id: "c5", name: "Arepa de chocolo con queso doble crema", category: "Desayuno", portion: "1 arepa mediana + 50g queso", calories: 450, protein: 16, carbs: 52, fats: 19, tip: "Modera la porción de queso si buscas déficit calórico." },
+        { id: "c6", name: "Tostadas con aguacate, huevo pochado y café", category: "Desayuno", portion: "2 tostadas integrales, 1/2 aguacate, 2 huevos", calories: 460, protein: 20, carbs: 35, fats: 26, tip: "Grasas monoinsaturadas saludables que prolongan la saciedad." },
+
+        /* ALMUERZOS (7) */
+        { id: "c7", name: "Bandeja ejecutiva con pechuga, arroz y ensalada", category: "Almuerzo", portion: "180g pechuga, 150g arroz, ensalada y tajada", calories: 640, protein: 46, carbs: 68, fats: 18, tip: "Plato equilibrado; prioriza la ensalada fresca al iniciar." },
+        { id: "c8", name: "Ajiaco santafereño con pollo y aguacate", category: "Almuerzo", portion: "1 plato hondo, 150g pollo desmechado, 1/4 aguacate", calories: 590, protein: 38, carbs: 62, fats: 20, tip: "Controla la crema de leche y el arroz adicional para ajustar calorías." },
+        { id: "c9", name: "Salmón a la plancha con arroz blanco y aguacate", category: "Almuerzo", portion: "180g salmón, 150g arroz cocido, 1/3 aguacate", calories: 670, protein: 42, carbs: 52, fats: 31, tip: "Alto contenido de Omega-3 antiinflamatorio y proteína." },
+        { id: "c10", name: "Carne asada con papa salada, guacamole y ensalada", category: "Almuerzo", portion: "180g res magra, 2 papas saladas, guacamole", calories: 610, protein: 45, carbs: 46, fats: 26, tip: "Buena fuente de hierro, creatina natural y proteína." },
+        { id: "c11", name: "Bowl de pollo teriyaki con arroz y vegetales salteados", category: "Almuerzo", portion: "170g pollo, 160g arroz, brócoli y zanahoria", calories: 580, protein: 43, carbs: 70, fats: 13, tip: "Bajo en grasas y alto en proteína magra." },
+        { id: "c12", name: "Pasta integral a la boloñesa con carne magra", category: "Almuerzo", portion: "200g pasta cocida + 150g carne molida magra", calories: 620, protein: 40, carbs: 72, fats: 18, tip: "Gran opción post-entrenamiento para recargar glucógeno." },
+        { id: "c13", name: "Filete de tilapia con puré de papa y ensalada verde", category: "Almuerzo", portion: "200g tilapia, 180g puré de papa, ensalada", calories: 490, protein: 44, carbs: 48, fats: 12, tip: "Muy ligero y alto en proteína, ideal en etapas de definición." },
+
+        /* SNACKS (6) */
+        { id: "c14", name: "Empanada colombiana con ají", category: "Snack", portion: "1 empanada mediana de carne/papa (90g)", calories: 260, protein: 7, carbs: 29, fats: 13, tip: "Disfrútala con moderación por su fritura en aceite." },
+        { id: "c15", name: "Yogur griego natural con frutos secos y arándanos", category: "Snack", portion: "170g yogur griego + 20g almendras/nueces", calories: 250, protein: 18, carbs: 16, fats: 12, tip: "Snack ideal para controlar el hambre entre comidas." },
+        { id: "c16", name: "Batido de proteína whey en agua con banano", category: "Snack", portion: "1 scoop (30g) + 1 banano mediano", calories: 225, protein: 25, carbs: 27, fats: 2, tip: "Recuperación muscular rápida después de entrenar." },
+        { id: "c17", name: "Almojábana tradicional con café americano", category: "Snack", portion: "1 almojábana mediana (75g) + café negro", calories: 245, protein: 9, carbs: 26, fats: 12, tip: "Aporta calcio y algo de proteína gracias a la cuajada." },
+        { id: "c18", name: "Manzana verde con mantequilla de maní natural", category: "Snack", portion: "1 manzana + 1 cucharada (16g) mantequilla de maní", calories: 190, protein: 4, carbs: 25, fats: 8, tip: "Combinación práctica de fibra y grasas saludables." },
+        { id: "c19", name: "Sándwich ligero de jamón de pavo y queso", category: "Snack", portion: "2 tajadas pan integral, 2 lonjas pavo, 1 queso", calories: 280, protein: 20, carbs: 30, fats: 9, tip: "Merienda salada equilibrada y fácil de preparar." },
+
+        /* CENAS (5) */
+        { id: "c20", name: "Arepa asada con queso y pollo desmechado", category: "Cena", portion: "1 arepa mediana, 120g pollo desmechado, 30g queso", calories: 440, protein: 36, carbs: 36, fats: 16, tip: "Cena colombiana ligera, saciante y alta en proteína." },
+        { id: "c21", name: "Pechuga a la plancha con verduras salteadas", category: "Cena", portion: "180g pechuga + 200g calabacín, pimentón y brócoli", calories: 360, protein: 44, carbs: 16, fats: 12, tip: "Excelente cena baja en calorías para cerrar el día dentro de meta." },
+        { id: "c22", name: "Ensalada César con pollo a la plancha", category: "Cena", portion: "160g pollo, lechuga romana, parmesano y aderezo ligero", calories: 420, protein: 38, carbs: 18, fats: 21, tip: "Pide el aderezo aparte para controlar mejor las grasas." },
+        { id: "c23", name: "Wrap integral de atún, aguacate y vegetales", category: "Cena", portion: "1 tortilla integral, 1 lata atún en agua, 1/3 aguacate", calories: 410, protein: 32, carbs: 34, fats: 15, tip: "Rápido de preparar en menos de 5 minutos sin cocinar." },
+        { id: "c24", name: "Crema de ahuyama con pechuga desmechada", category: "Cena", portion: "1 tazón de crema + 120g pechuga de pollo", calories: 340, protein: 31, carbs: 28, fats: 10, tip: "Reconfortante, suave para la digestión nocturna y nutritiva." }
+      ];
+
+      /* Estado global de la aplicación */
+      let userProfile = loadJSON(LS_KEYS.PROFILE, DEFAULT_PROFILE);
+      let allMeals = loadJSON(LS_KEYS.MEALS, []);
+      let favoriteMeals = loadJSON(LS_KEYS.FAVORITES, []);
+      let selectedDate = getTodayISO();
+      let activeCatalogCat = "Todas";
+      let currentImageBase64 = null;
+      let basePortionPreset = null;
+      let pendingDeleteId = null;
+      let activeAiController = null;
+      let activeAiCountdownTimer = null;
+      let userAbortedAi = false;
+
+      /* =========================================================================
+         GESTIÓN DE API KEY (ENTORNO O LOCALSTORAGE)
+         ========================================================================= */
+      function getEffectiveApiKey() {
+        if (ENV_API_KEY && ENV_API_KEY.trim() !== "") {
+          return ENV_API_KEY.trim();
+        }
+        try {
+          const stored = localStorage.getItem(LS_KEYS.API_KEY);
+          return stored ? stored.trim() : "";
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function saveUserApiKey(keyStr) {
+        const clean = (keyStr || "").trim();
+        try {
+          if (clean) {
+            localStorage.setItem(LS_KEYS.API_KEY, clean);
+          } else {
+            localStorage.removeItem(LS_KEYS.API_KEY);
+          }
+          localStorage.removeItem(LS_KEYS.MODEL);
+        } catch (e) {
+          showToast("No se pudo guardar la clave en almacenamiento local.", "error");
+        }
+        syncApiKeyUI();
+      }
+
+      function getSavedActiveModel() {
+        try {
+          return (localStorage.getItem(LS_KEYS.MODEL) || "").trim();
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function setSavedActiveModel(modelName) {
+        try {
+          if (modelName) {
+            localStorage.setItem(LS_KEYS.MODEL, modelName);
+          } else {
+            localStorage.removeItem(LS_KEYS.MODEL);
+          }
+        } catch (e) {}
+        syncApiKeyUI();
+      }
+
+      function syncApiKeyUI() {
+        const key = getEffectiveApiKey();
+        const activeModel = getSavedActiveModel();
+        const badge = document.getElementById("prof-api-status");
+        const modelBadge = document.getElementById("prof-model-badge");
+        const profInput = document.getElementById("prof-api-key-input");
+        const inlineInput = document.getElementById("inline-api-key-input");
+
+        if (profInput) profInput.value = key;
+        if (inlineInput) inlineInput.value = key;
+
+        if (badge) {
+          if (key) {
+            badge.textContent = "Configurada (" + key.slice(0, 6) + "…)";
+            badge.className = "api-status-badge ok";
+          } else {
+            badge.textContent = "No configurada";
+            badge.className = "api-status-badge missing";
+          }
+        }
+
+        if (modelBadge) {
+          if (key && activeModel) {
+            modelBadge.textContent = "Modelo activo: " + activeModel;
+            modelBadge.classList.remove("hidden");
+          } else {
+            modelBadge.classList.add("hidden");
+          }
+        }
+      }
+
+      /* =========================================================================
+         DETECCIÓN AUTOMÁTICA DE MODELO Y FAILOVER ANTE HTTP 404, 429 Y 503
+         ========================================================================= */
+      function isRetryableModelStatus(status) {
+        return status === 404 || status === 429 || status === 503;
+      }
+
+      function rankGeminiCandidates(cleanModelNames) {
+        const unique = [];
+        cleanModelNames.forEach(function (name) {
+          if (name && unique.indexOf(name) === -1) {
+            unique.push(name);
+          }
+        });
+
+        const preferredExact = [
+          "gemini-2.5-flash",
+          "gemini-2.0-flash",
+          "gemini-2.0-flash-lite",
+          "gemini-2.5-flash-lite",
+          "gemini-1.5-flash",
+          "gemini-1.5-pro"
+        ];
+
+        const excludedKeywords = ["embedding", "aqa", "imagen", "veo", "tts", "audio"];
+        const ordered = [];
+
+        function isExcluded(modelName) {
+          const lower = modelName.toLowerCase();
+          return excludedKeywords.some(function (kw) {
+            return lower.indexOf(kw) !== -1;
+          });
+        }
+
+        preferredExact.forEach(function (pref) {
+          if (unique.indexOf(pref) !== -1 && ordered.indexOf(pref) === -1) {
+            ordered.push(pref);
+          }
+        });
+
+        unique.forEach(function (name) {
+          const lower = name.toLowerCase();
+          if (
+            lower.indexOf("flash") !== -1 &&
+            !isExcluded(name) &&
+            ordered.indexOf(name) === -1
+          ) {
+            ordered.push(name);
+          }
+        });
+
+        unique.forEach(function (name) {
+          const lower = name.toLowerCase();
+          if (
+            lower.indexOf("gemini") !== -1 &&
+            !isExcluded(name) &&
+            ordered.indexOf(name) === -1
+          ) {
+            ordered.push(name);
+          }
+        });
+
+        return ordered;
+      }
+
+      async function discoverCandidateModels(activeKey, forceRefresh) {
+        const cached = !forceRefresh ? getSavedActiveModel() : "";
+        if (forceRefresh) {
+          setSavedActiveModel("");
+        }
+
+        const listUrl =
+          "https://generativelanguage.googleapis.com/v1beta/models?key=" +
+          encodeURIComponent(activeKey);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(function () {
+          try {
+            controller.abort();
+          } catch (e) {}
+        }, 10000);
+
+        let baseCandidates = FALLBACK_GEMINI_MODELS.slice();
+
+        try {
+          const response = await fetch(listUrl, {
+            method: "GET",
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            const httpErr = new Error("HTTP " + response.status + " al listar modelos");
+            httpErr.status = response.status;
+            throw httpErr;
+          }
+
+          const data = await response.json();
+          const rawModels = Array.isArray(data && data.models) ? data.models : [];
+
+          const compatibleNames = rawModels
+            .filter(function (m) {
+              return (
+                Array.isArray(m.supportedGenerationMethods) &&
+                m.supportedGenerationMethods.indexOf("generateContent") !== -1
+              );
+            })
+            .map(function (m) {
+              return String(m.name || "").replace(/^models\//, "").trim();
+            })
+            .filter(Boolean);
+
+          const ranked = rankGeminiCandidates(compatibleNames);
+          if (ranked.length > 0) {
+            baseCandidates = ranked;
+          }
+        } catch (err) {
+          clearTimeout(timeoutId);
+          if (err && (err.status === 400 || err.status === 401 || err.status === 403)) {
+            throw err;
+          }
+        }
+
+        const orderedList = [];
+        if (cached) {
+          orderedList.push(cached);
+        }
+        baseCandidates.forEach(function (m) {
+          if (orderedList.indexOf(m) === -1) {
+            orderedList.push(m);
+          }
+        });
+        FALLBACK_GEMINI_MODELS.forEach(function (m) {
+          if (orderedList.indexOf(m) === -1) {
+            orderedList.push(m);
+          }
+        });
+
+        return orderedList;
+      }
+
+      function parseGeminiJsonText(rawText) {
+        let cleaned = String(rawText || "").trim();
+        cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+        const firstBrace = cleaned.indexOf("{");
+        const lastBrace = cleaned.lastIndexOf("}");
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+        }
+        return JSON.parse(cleaned);
+      }
+
+      /* =========================================================================
+         INDEXEDDB + LOCALSTORAGE (PERSISTENCIA DUAL SEGURA)
+         ========================================================================= */
+      function openIDB() {
+        return new Promise(function (resolve, reject) {
+          if (!window.indexedDB) {
+            reject(new Error("IndexedDB no disponible"));
+            return;
+          }
+          const req = window.indexedDB.open(IDB_NAME, 1);
+          req.onupgradeneeded = function (e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(IDB_STORE)) {
+              db.createObjectStore(IDB_STORE, { keyPath: "id" });
+            }
+          };
+          req.onsuccess = function (e) { resolve(e.target.result); };
+          req.onerror = function () { reject(new Error("Error abriendo IndexedDB")); };
+        });
+      }
+
+      function syncMealsToIDB(mealsArray) {
+        openIDB().then(function (db) {
+          const tx = db.transaction(IDB_STORE, "readwrite");
+          const store = tx.objectStore(IDB_STORE);
+          store.clear();
+          mealsArray.forEach(function (m) {
+            store.put(m);
+          });
+        }).catch(function () {});
+      }
+
+      function hydrateMealsFromIDB() {
+        openIDB().then(function (db) {
+          const tx = db.transaction(IDB_STORE, "readonly");
+          const store = tx.objectStore(IDB_STORE);
+          const req = store.getAll();
+          req.onsuccess = function () {
+            const rows = req.result;
+            if (Array.isArray(rows) && rows.length > 0) {
+              allMeals = rows;
+              persistMealsSafely(allMeals, false);
+              renderDashboard();
+            } else if (allMeals.length > 0) {
+              syncMealsToIDB(allMeals);
+            }
+          };
+        }).catch(function () {});
+      }
+
+      function persistMealsSafely(mealsList, writeIDB) {
+        if (writeIDB !== false) {
+          syncMealsToIDB(mealsList);
+        }
+        if (!saveJSON(LS_KEYS.MEALS, mealsList)) {
+          const trimmed = mealsList.map(function (m, idx) {
+            return idx >= mealsList.length - 5 ? m : Object.assign({}, m, { image: null });
+          });
+          saveJSON(LS_KEYS.MEALS, trimmed);
+        }
+      }
+
+      /* =========================================================================
+         UTILIDADES GENERALES
+         ========================================================================= */
+      function loadJSON(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) return Array.isArray(fallback) ? fallback.slice() : Object.assign({}, fallback);
+          const parsed = JSON.parse(raw);
+          return parsed !== null && parsed !== undefined ? parsed : fallback;
+        } catch (err) {
+          return Array.isArray(fallback) ? fallback.slice() : Object.assign({}, fallback);
+        }
+      }
+
+      function saveJSON(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+          return true;
+        } catch (err) {
+          return false;
+        }
+      }
+
+      function getTodayISO() {
+        const now = new Date();
+        const offsetMs = now.getTimezoneOffset() * 60000;
+        return new Date(now.getTime() - offsetMs).toISOString().split("T")[0];
+      }
+
+      function getCurrentHHMM() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        return hh + ":" + mm;
+      }
+
+      function formatNum(num) {
+        return Math.round(Number(num) || 0).toLocaleString("es-CO");
+      }
+
+      function escapeHTML(str) {
+        return String(str || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function showToast(message, type) {
+        const container = document.getElementById("toast-container");
+        if (!container) return;
+        const item = document.createElement("div");
+        item.className = "toast-item " + (type || "success");
+        item.textContent = message;
+        container.appendChild(item);
+        setTimeout(function () {
+          if (item.parentNode) item.parentNode.removeChild(item);
+        }, 3600);
+      }
+
+      /* =========================================================================
+         CALCULADORA CIENTÍFICA MIFFLIN-ST JEOR
+         ========================================================================= */
+      function calculateTargets(profile) {
+        const weight = Math.max(30, Number(profile.weight) || 90.5);
+        const height = Math.max(100, Number(profile.height) || 182);
+        const age = Math.max(14, Number(profile.age) || 36);
+        const activity = Number(profile.activity) || 1.55;
+        const sexOffset = profile.sex === "female" ? -161 : 5;
+
+        const bmr = Math.round(10 * weight + 6.25 * height - 5 * age + sexOffset);
+        const tdee = Math.round(bmr * activity);
+
+        let kcalDelta = 0;
+        let protPerKg = 1.8;
+        let goalLabel = "Mantenimiento";
+
+        if (profile.goalType === "deficit") {
+          kcalDelta = -450;
+          protPerKg = 2.0;
+          goalLabel = "Definición";
+        } else if (profile.goalType === "surplus") {
+          kcalDelta = 300;
+          protPerKg = 1.8;
+          goalLabel = "Volumen";
+        }
+
+        const targetCalories = Math.max(1200, tdee + kcalDelta);
+        const minCalories = Math.max(1100, targetCalories - 150);
+        const maxCalories = targetCalories + 150;
+
+        const proteinGrams = Math.round(weight * protPerKg);
+        const fatGrams = Math.round((targetCalories * 0.25) / 9);
+        const remainingKcal = Math.max(120, targetCalories - proteinGrams * 4 - fatGrams * 9);
+        const carbGrams = Math.round(remainingKcal / 4);
+
+        return {
+          bmr: bmr,
+          tdee: tdee,
+          targetCalories: targetCalories,
+          minCalories: minCalories,
+          maxCalories: maxCalories,
+          proteinGrams: proteinGrams,
+          carbGrams: carbGrams,
+          fatGrams: fatGrams,
+          protPerKg: protPerKg,
+          goalLabel: goalLabel
+        };
+      }
+
+      /* =========================================================================
+         TEMA CLARO / OSCURO
+         ========================================================================= */
+      function applyTheme(isDark) {
+        const htmlEl = document.documentElement;
+        const moon = document.getElementById("icon-moon");
+        const sun = document.getElementById("icon-sun");
+        if (isDark) {
+          htmlEl.classList.add("dark");
+          if (moon) moon.classList.add("hidden");
+          if (sun) sun.classList.remove("hidden");
+        } else {
+          htmlEl.classList.remove("dark");
+          if (moon) moon.classList.remove("hidden");
+          if (sun) sun.classList.add("hidden");
+        }
+      }
+
+      function initTheme() {
+        const saved = localStorage.getItem(LS_KEYS.THEME);
+        applyTheme(saved === "dark");
+      }
+
+      /* =========================================================================
+         RENDERIZADO DEL DASHBOARD Y LISTA DEL DÍA
+         ========================================================================= */
+      function renderDashboard() {
+        const targets = calculateTargets(userProfile);
+
+        document.getElementById("header-kcal-target").textContent = formatNum(targets.targetCalories);
+        document.getElementById("dash-goal-badge").textContent = targets.goalLabel + " • " + formatNum(targets.targetCalories) + " kcal";
+        document.getElementById("dash-range-badge").textContent = "Rango ideal: " + formatNum(targets.minCalories) + " – " + formatNum(targets.maxCalories) + " kcal";
+        document.getElementById("dash-target-kcal").textContent = formatNum(targets.targetCalories);
+
+        document.getElementById("kpi-bmr").textContent = formatNum(targets.bmr) + " kcal";
+        document.getElementById("kpi-tdee").textContent = formatNum(targets.tdee) + " kcal";
+        document.getElementById("kpi-body").textContent = userProfile.weight + "kg • " + userProfile.height + "cm";
+
+        const dateInput = document.getElementById("date-filter");
+        dateInput.value = selectedDate;
+        const today = getTodayISO();
+        const labelEl = document.getElementById("date-human-label");
+        if (selectedDate === today) {
+          labelEl.textContent = "Hoy";
+        } else {
+          const parts = selectedDate.split("-");
+          labelEl.textContent = parts[2] + "/" + parts[1] + "/" + parts[0];
+        }
+
+        const mealsOfDay = allMeals.filter(function (m) {
+          return m.date === selectedDate;
+        });
+
+        let totalKcal = 0;
+        let totalProt = 0;
+        let totalCarb = 0;
+        let totalFat = 0;
+
+        mealsOfDay.forEach(function (m) {
+          totalKcal += Number(m.calories) || 0;
+          totalProt += Number(m.protein) || 0;
+          totalCarb += Number(m.carbs) || 0;
+          totalFat += Number(m.fats) || 0;
+        });
+
+        const circumference = 364.42;
+        const ratio = Math.min(1, totalKcal / Math.max(1, targets.targetCalories));
+        const offset = circumference - ratio * circumference;
+        const ringEl = document.getElementById("calorie-ring-progress");
+        ringEl.style.strokeDashoffset = String(offset);
+
+        const statusPill = document.getElementById("dash-status-pill");
+        statusPill.className = "status-pill";
+
+        if (totalKcal > targets.maxCalories) {
+          ringEl.style.stroke = "#F43F5E";
+          statusPill.classList.add("danger");
+          statusPill.textContent = "Límite excedido por +" + formatNum(totalKcal - targets.targetCalories) + " kcal";
+        } else if (totalKcal >= targets.minCalories) {
+          ringEl.style.stroke = "#10B981";
+          statusPill.textContent = "Dentro de tu rango ideal (" + formatNum(totalKcal) + " kcal)";
+        } else if (totalKcal >= targets.targetCalories * 0.85) {
+          ringEl.style.stroke = "#F59E0B";
+          statusPill.classList.add("warning");
+          statusPill.textContent = "Cerca del límite • Quedan " + formatNum(targets.targetCalories - totalKcal) + " kcal";
+        } else {
+          ringEl.style.stroke = "#10B981";
+          statusPill.textContent = "Te quedan " + formatNum(targets.targetCalories - totalKcal) + " kcal disponibles";
+        }
+
+        document.getElementById("dash-consumed-kcal").textContent = formatNum(totalKcal);
+
+        document.getElementById("dash-prot-now").textContent = Math.round(totalProt) + "g";
+        document.getElementById("dash-prot-goal").textContent = targets.proteinGrams + "g";
+        document.getElementById("bar-protein").style.width = Math.min(100, (totalProt / Math.max(1, targets.proteinGrams)) * 100) + "%";
+
+        document.getElementById("dash-carb-now").textContent = Math.round(totalCarb) + "g";
+        document.getElementById("dash-carb-goal").textContent = targets.carbGrams + "g";
+        document.getElementById("bar-carbs").style.width = Math.min(100, (totalCarb / Math.max(1, targets.carbGrams)) * 100) + "%";
+
+        document.getElementById("dash-fat-now").textContent = Math.round(totalFat) + "g";
+        document.getElementById("dash-fat-goal").textContent = targets.fatGrams + "g";
+        document.getElementById("bar-fats").style.width = Math.min(100, (totalFat / Math.max(1, targets.fatGrams)) * 100) + "%";
+
+        renderMealsHistory(mealsOfDay);
+      }
+
+      function renderMealsHistory(mealsOfDay) {
+        const catFilter = document.getElementById("history-cat-filter").value;
+        const grid = document.getElementById("meals-grid");
+        const emptyBox = document.getElementById("empty-state");
+
+        const filtered = mealsOfDay
+          .filter(function (m) {
+            return catFilter === "Todas" || m.category === catFilter;
+          })
+          .sort(function (a, b) {
+            return (b.time || "").localeCompare(a.time || "");
+          });
+
+        grid.innerHTML = "";
+
+        if (filtered.length === 0) {
+          emptyBox.classList.remove("hidden");
+          return;
+        }
+        emptyBox.classList.add("hidden");
+
+        filtered.forEach(function (meal) {
+          const card = document.createElement("article");
+          card.className = "meal-card";
+
+          const catClass = "cat-" + (meal.category || "Snack");
+          let topVisual = "";
+
+          if (meal.image) {
+            topVisual =
+              '<div class="meal-photo-box">' +
+                '<img src="' + meal.image + '" alt="' + escapeHTML(meal.name) + '" />' +
+                '<span class="meal-cat-badge ' + catClass + '">' + escapeHTML(meal.category) + '</span>' +
+                '<span class="meal-kcal-badge">' + formatNum(meal.calories) + ' kcal</span>' +
+              '</div>';
+          } else {
+            topVisual =
+              '<div class="meal-no-photo-header">' +
+                '<div class="meal-no-photo-left">' +
+                  '<div class="cat-icon-box ' + catClass + '">' +
+                    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>' +
+                  '</div>' +
+                  '<div>' +
+                    '<strong style="font-size:12px; display:block;">' + escapeHTML(meal.category) + '</strong>' +
+                    '<span style="font-size:11px; color:var(--text-muted);">Sin foto • Registro manual</span>' +
+                  '</div>' +
+                '</div>' +
+                '<span style="font-size:13px; font-weight:800; color:var(--emerald-600); background:var(--emerald-50); padding:4px 9px; border-radius:8px;">' +
+                  formatNum(meal.calories) + ' kcal' +
+                '</span>' +
+              '</div>';
+          }
+
+          card.innerHTML =
+            '<div>' +
+              topVisual +
+              '<div class="meal-body">' +
+                '<div class="meal-title-row">' +
+                  '<h3 class="meal-name">' + escapeHTML(meal.name) + '</h3>' +
+                  '<span class="meal-time">' + escapeHTML(meal.time || "--:--") + '</span>' +
+                '</div>' +
+                (meal.notes ? '<p class="meal-notes">' + escapeHTML(meal.notes) + '</p>' : '') +
+                (meal.tip ? '<div class="meal-tip">' + escapeHTML(meal.tip) + '</div>' : '') +
+                '<div class="meal-macros-grid">' +
+                  '<div class="macro-chip prot"><span class="macro-chip-lbl">Prot</span><span class="macro-chip-val">' + Math.round(meal.protein || 0) + 'g</span></div>' +
+                  '<div class="macro-chip carb"><span class="macro-chip-lbl">Carbos</span><span class="macro-chip-val">' + Math.round(meal.carbs || 0) + 'g</span></div>' +
+                  '<div class="macro-chip fat"><span class="macro-chip-lbl">Grasas</span><span class="macro-chip-val">' + Math.round(meal.fats || 0) + 'g</span></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="meal-footer-actions">' +
+              '<button type="button" class="btn-card-action edit" data-edit="' + meal.id + '">Editar</button>' +
+              '<button type="button" class="btn-card-action delete" data-del="' + meal.id + '">Eliminar</button>' +
+            '</div>';
+
+          card.querySelector("[data-edit]").addEventListener("click", function () {
+            openEditMeal(meal.id);
+          });
+          card.querySelector("[data-del]").addEventListener("click", function () {
+            pendingDeleteId = meal.id;
+            document.getElementById("delete-modal").classList.remove("hidden");
+          });
+
+          grid.appendChild(card);
+        });
+      }
+
+      /* =========================================================================
+         CATÁLOGO DE COMIDAS SIN FOTO (OPCIONES COMUNES + MIS FRECUENTES)
+         ========================================================================= */
+      function renderCatalog() {
+        document.getElementById("fav-count-lbl").textContent = String(favoriteMeals.length);
+
+        const query = (document.getElementById("catalog-search").value || "").trim().toLowerCase();
+        const grid = document.getElementById("catalog-grid");
+
+        let sourceList = [];
+        if (activeCatalogCat === "Mis Frecuentes") {
+          sourceList = favoriteMeals.map(function (f) {
+            return Object.assign({}, f, { isFav: true });
+          });
+        } else if (activeCatalogCat === "Todas") {
+          sourceList = COMMON_MEALS.slice();
+        } else {
+          sourceList = COMMON_MEALS.filter(function (item) {
+            return item.category === activeCatalogCat;
+          });
+        }
+
+        if (query) {
+          sourceList = sourceList.filter(function (item) {
+            return (
+              item.name.toLowerCase().indexOf(query) !== -1 ||
+              (item.portion && item.portion.toLowerCase().indexOf(query) !== -1) ||
+              (item.category && item.category.toLowerCase().indexOf(query) !== -1)
+            );
+          });
+        }
+
+        grid.innerHTML = "";
+
+        if (sourceList.length === 0) {
+          grid.innerHTML =
+            '<div style="grid-column:1/-1; text-align:center; padding:24px 12px; color:var(--text-secondary); font-size:13px;">' +
+              (activeCatalogCat === "Mis Frecuentes"
+                ? 'Aún no tienes comidas frecuentes guardadas. Crea una personalizada y marca "Guardar en Mis Comidas Frecuentes".'
+                : "No se encontraron platos con ese término de búsqueda.") +
+            "</div>";
+          return;
+        }
+
+        sourceList.forEach(function (item) {
+          const card = document.createElement("div");
+          card.className = "preset-card";
+          card.innerHTML =
+            '<div>' +
+              '<div class="preset-top">' +
+                '<div>' +
+                  '<div class="preset-name">' + escapeHTML(item.name) + '</div>' +
+                  '<div class="preset-portion">' + escapeHTML(item.category) + ' • ' + escapeHTML(item.portion || "1 porción") + '</div>' +
+                '</div>' +
+                '<span class="preset-kcal-tag">' + formatNum(item.calories) + ' kcal</span>' +
+              '</div>' +
+              '<div class="preset-macros-line" style="margin-top:8px;">' +
+                '<span class="m-prot">P: ' + item.protein + 'g</span>' +
+                '<span class="m-carb">C: ' + item.carbs + 'g</span>' +
+                '<span class="m-fat">G: ' + item.fats + 'g</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="preset-actions">' +
+              '<button type="button" class="btn-preset-add">+ Agregar</button>' +
+              '<button type="button" class="btn-preset-portion">Porción / Editar</button>' +
+              (item.isFav ? '<button type="button" class="btn-preset-del-fav" title="Quitar de frecuentes">✕</button>' : '') +
+            '</div>';
+
+          card.querySelector(".btn-preset-add").addEventListener("click", function () {
+            const newMeal = {
+              id: "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+              date: selectedDate,
+              time: getCurrentHHMM(),
+              name: item.name,
+              category: item.category || "Almuerzo",
+              calories: Math.round(Number(item.calories) || 0),
+              protein: Number(item.protein) || 0,
+              carbs: Number(item.carbs) || 0,
+              fats: Number(item.fats) || 0,
+              notes: item.portion || "",
+              tip: item.tip || "",
+              image: null
+            };
+            allMeals.push(newMeal);
+            persistMealsSafely(allMeals, true);
+            renderDashboard();
+            showToast("+" + newMeal.calories + " kcal agregadas (" + newMeal.name + ")", "success");
+          });
+
+          card.querySelector(".btn-preset-portion").addEventListener("click", function () {
+            openMealModal({
+              type: "preset",
+              preset: item
+            });
+          });
+
+          if (item.isFav) {
+            card.querySelector(".btn-preset-del-fav").addEventListener("click", function () {
+              favoriteMeals = favoriteMeals.filter(function (f) { return f.id !== item.id; });
+              saveJSON(LS_KEYS.FAVORITES, favoriteMeals);
+              renderCatalog();
+              showToast("Eliminado de Mis Frecuentes", "info");
+            });
+          }
+
+          grid.appendChild(card);
+        });
+      }
+
+      /* =========================================================================
+         CAMBIO DE PESTAÑAS DE MODO (CON FOTO IA VS SIN FOTO MANUAL)
+         ========================================================================= */
+      function setRegistrationMode(mode) {
+        const tabPhoto = document.getElementById("tab-mode-photo");
+        const tabManual = document.getElementById("tab-mode-manual");
+        const panelPhoto = document.getElementById("panel-photo-mode");
+        const panelManual = document.getElementById("panel-manual-mode");
+
+        if (mode === "manual") {
+          tabPhoto.classList.remove("active");
+          tabManual.classList.add("active");
+          panelPhoto.classList.add("hidden");
+          panelManual.classList.remove("hidden");
+          renderCatalog();
+        } else {
+          tabManual.classList.remove("active");
+          tabPhoto.classList.add("active");
+          panelManual.classList.add("hidden");
+          panelPhoto.classList.remove("hidden");
+        }
+      }
+
+      /* =========================================================================
+         MODAL DE COMIDA + LECTURA DIRECTA FILEREADER + COMPRESIÓN + GEMINI API
+         ========================================================================= */
+      function openMealModalForPhoto() {
+        const modal = document.getElementById("meal-modal");
+        const photoBox = document.getElementById("meal-photo-preview-box");
+        const photoImg = document.getElementById("modal-preview-img");
+        const photoSizeBadge = document.getElementById("photo-size-badge");
+        const aiOverlay = document.getElementById("ai-loading-overlay");
+        const aiBanner = document.getElementById("ai-notice-banner");
+        const inlineKeyBox = document.getElementById("inline-key-box");
+        const multPanel = document.getElementById("portion-multiplier-panel");
+        const favWrap = document.getElementById("fav-checkbox-container");
+
+        stopActiveAiRequest();
+        currentImageBase64 = null;
+        basePortionPreset = null;
+
+        document.getElementById("meal-modal-title").textContent = "Análisis de Comida con IA";
+        document.getElementById("meal-modal-subtitle").textContent = "Cargando fotografía seleccionada...";
+        document.getElementById("form-meal-id").value = "";
+        document.getElementById("form-meal-name").value = "";
+        document.getElementById("form-meal-category").value = guessMealCategoryByHour();
+        document.getElementById("form-meal-time").value = getCurrentHHMM();
+        document.getElementById("form-meal-calories").value = "";
+        document.getElementById("form-meal-protein").value = "0";
+        document.getElementById("form-meal-carbs").value = "0";
+        document.getElementById("form-meal-fats").value = "0";
+        document.getElementById("form-meal-notes").value = "";
+        document.getElementById("form-meal-tip").value = "";
+        document.getElementById("form-save-favorite").checked = false;
+
+        photoImg.removeAttribute("src");
+        photoSizeBadge.classList.add("hidden");
+        aiBanner.classList.add("hidden");
+        inlineKeyBox.classList.add("hidden");
+        multPanel.classList.add("hidden");
+        favWrap.classList.remove("hidden");
+
+        document.getElementById("ai-loading-title").textContent = "Cargando imagen...";
+        document.getElementById("ai-loading-sub").textContent = "Preparando fotografía desde tu dispositivo";
+        aiOverlay.classList.remove("hidden");
+        photoBox.classList.remove("hidden");
+        modal.classList.remove("hidden");
+      }
+
+      function openMealModal(options) {
+        const modal = document.getElementById("meal-modal");
+        const photoBox = document.getElementById("meal-photo-preview-box");
+        const photoImg = document.getElementById("modal-preview-img");
+        const photoSizeBadge = document.getElementById("photo-size-badge");
+        const aiOverlay = document.getElementById("ai-loading-overlay");
+        const aiBanner = document.getElementById("ai-notice-banner");
+        const inlineKeyBox = document.getElementById("inline-key-box");
+        const multPanel = document.getElementById("portion-multiplier-panel");
+        const favWrap = document.getElementById("fav-checkbox-container");
+
+        stopActiveAiRequest();
+        aiOverlay.classList.add("hidden");
+        aiBanner.classList.add("hidden");
+        inlineKeyBox.classList.add("hidden");
+        multPanel.classList.add("hidden");
+        photoSizeBadge.classList.add("hidden");
+        basePortionPreset = null;
+        document.getElementById("form-save-favorite").checked = false;
+
+        if (options.type === "preset") {
+          const p = options.preset;
+          document.getElementById("meal-modal-title").textContent = "Ajustar Porción de Comida";
+          document.getElementById("meal-modal-subtitle").textContent = "Elige el multiplicador de porción o edita los datos";
+          document.getElementById("form-meal-id").value = "";
+          document.getElementById("form-meal-name").value = p.name;
+          document.getElementById("form-meal-category").value = p.category || "Almuerzo";
+          document.getElementById("form-meal-time").value = getCurrentHHMM();
+          document.getElementById("form-meal-calories").value = p.calories;
+          document.getElementById("form-meal-protein").value = p.protein;
+          document.getElementById("form-meal-carbs").value = p.carbs;
+          document.getElementById("form-meal-fats").value = p.fats;
+          document.getElementById("form-meal-notes").value = p.portion || "";
+          document.getElementById("form-meal-tip").value = p.tip || "";
+
+          currentImageBase64 = null;
+          photoBox.classList.add("hidden");
+          favWrap.classList.remove("hidden");
+
+          basePortionPreset = {
+            name: p.name,
+            calories: Number(p.calories) || 0,
+            protein: Number(p.protein) || 0,
+            carbs: Number(p.carbs) || 0,
+            fats: Number(p.fats) || 0
+          };
+          resetMultiplierButtons();
+          multPanel.classList.remove("hidden");
+        } else if (options.type === "edit") {
+          const m = options.meal;
+          document.getElementById("meal-modal-title").textContent = "Editar Comida";
+          document.getElementById("meal-modal-subtitle").textContent = "Modifica cualquier campo del registro";
+          document.getElementById("form-meal-id").value = m.id;
+          document.getElementById("form-meal-name").value = m.name;
+          document.getElementById("form-meal-category").value = m.category;
+          document.getElementById("form-meal-time").value = m.time || getCurrentHHMM();
+          document.getElementById("form-meal-calories").value = m.calories;
+          document.getElementById("form-meal-protein").value = m.protein;
+          document.getElementById("form-meal-carbs").value = m.carbs;
+          document.getElementById("form-meal-fats").value = m.fats;
+          document.getElementById("form-meal-notes").value = m.notes || "";
+          document.getElementById("form-meal-tip").value = m.tip || "";
+
+          currentImageBase64 = m.image || null;
+          if (currentImageBase64) {
+            photoImg.src = currentImageBase64;
+            photoBox.classList.remove("hidden");
+          } else {
+            photoBox.classList.add("hidden");
+          }
+          favWrap.classList.add("hidden");
+        } else {
+          document.getElementById("meal-modal-title").textContent = "Comida Personalizada sin Foto";
+          document.getElementById("meal-modal-subtitle").textContent = "Ingresa manualmente los datos de tu comida";
+          document.getElementById("form-meal-id").value = "";
+          document.getElementById("form-meal-name").value = "";
+          document.getElementById("form-meal-category").value =
+            activeCatalogCat !== "Todas" && activeCatalogCat !== "Mis Frecuentes"
+              ? activeCatalogCat
+              : guessMealCategoryByHour();
+          document.getElementById("form-meal-time").value = getCurrentHHMM();
+          document.getElementById("form-meal-calories").value = "";
+          document.getElementById("form-meal-protein").value = "0";
+          document.getElementById("form-meal-carbs").value = "0";
+          document.getElementById("form-meal-fats").value = "0";
+          document.getElementById("form-meal-notes").value = "";
+          document.getElementById("form-meal-tip").value = "";
+
+          currentImageBase64 = null;
+          photoBox.classList.add("hidden");
+          favWrap.classList.remove("hidden");
+        }
+
+        modal.classList.remove("hidden");
+      }
+
+      function stopActiveAiRequest() {
+        if (activeAiCountdownTimer) {
+          clearInterval(activeAiCountdownTimer);
+          activeAiCountdownTimer = null;
+        }
+        if (activeAiController) {
+          try {
+            activeAiController.abort();
+          } catch (e) {}
+          activeAiController = null;
+        }
+      }
+
+      function closeMealModal() {
+        stopActiveAiRequest();
+        document.getElementById("meal-modal").classList.add("hidden");
+        document.getElementById("ai-loading-overlay").classList.add("hidden");
+        currentImageBase64 = null;
+        basePortionPreset = null;
+      }
+
+      function openEditMeal(mealId) {
+        const meal = allMeals.find(function (m) { return m.id === mealId; });
+        if (!meal) return;
+        openMealModal({ type: "edit", meal: meal });
+      }
+
+      function guessMealCategoryByHour() {
+        const hr = new Date().getHours();
+        if (hr >= 5 && hr < 11) return "Desayuno";
+        if (hr >= 11 && hr < 16) return "Almuerzo";
+        if (hr >= 16 && hr < 19) return "Snack";
+        return "Cena";
+      }
+
+      function resetMultiplierButtons() {
+        document.getElementById("portion-factor-label").textContent = "Porción estándar (1x)";
+        document.querySelectorAll(".mult-btn").forEach(function (btn) {
+          btn.classList.toggle("active", Number(btn.getAttribute("data-factor")) === 1);
+        });
+      }
+
+      function applyMultiplier(factor) {
+        if (!basePortionPreset) return;
+        document.getElementById("portion-factor-label").textContent = "Porción " + factor + "x";
+        document.querySelectorAll(".mult-btn").forEach(function (btn) {
+          btn.classList.toggle("active", Number(btn.getAttribute("data-factor")) === factor);
+        });
+        document.getElementById("form-meal-calories").value = Math.round(basePortionPreset.calories * factor);
+        document.getElementById("form-meal-protein").value = Math.round(basePortionPreset.protein * factor * 10) / 10;
+        document.getElementById("form-meal-carbs").value = Math.round(basePortionPreset.carbs * factor * 10) / 10;
+        document.getElementById("form-meal-fats").value = Math.round(basePortionPreset.fats * factor * 10) / 10;
+        document.getElementById("form-meal-name").value =
+          factor === 1 ? basePortionPreset.name : basePortionPreset.name + " (" + factor + "x)";
+      }
+
+      /* Compresión limpia desde dataURL usando Image() y <canvas> (máx 800px, JPEG 0.75) */
+      function compressDataUrl(dataUrl, maxDim, quality) {
+        return new Promise(function (resolve) {
+          const img = new Image();
+          img.onload = function () {
+            try {
+              let w = img.naturalWidth || img.width || maxDim;
+              let h = img.naturalHeight || img.height || maxDim;
+
+              if (w > maxDim || h > maxDim) {
+                if (w >= h) {
+                  h = Math.max(1, Math.round((h * maxDim) / w));
+                  w = maxDim;
+                } else {
+                  w = Math.max(1, Math.round((w * maxDim) / h));
+                  h = maxDim;
+                }
+              }
+
+              const canvas = document.createElement("canvas");
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) {
+                resolve(dataUrl);
+                return;
+              }
+              ctx.drawImage(img, 0, 0, w, h);
+              const compressed = canvas.toDataURL("image/jpeg", quality);
+              resolve(compressed && compressed.length > 32 ? compressed : dataUrl);
+            } catch (err) {
+              resolve(dataUrl);
+            }
+          };
+          img.onerror = function () {
+            resolve(dataUrl);
+          };
+          img.src = dataUrl;
+        });
+      }
+
+      function estimateBase64KB(dataUrl) {
+        if (!dataUrl) return 0;
+        const idx = dataUrl.indexOf(",");
+        const raw = idx !== -1 ? dataUrl.slice(idx + 1) : dataUrl;
+        return Math.max(1, Math.round((raw.length * 3) / 4 / 1024));
+      }
+
+      function handlePhotoInputChange(e) {
+        const inputEl = e.target;
+        const file = inputEl.files && inputEl.files[0];
+        if (!file) return;
+
+        openMealModalForPhoto();
+
+        const reader = new FileReader();
+        reader.onload = async function (ev) {
+          const rawDataUrl = ev.target && ev.target.result;
+          if (!rawDataUrl) {
+            document.getElementById("ai-loading-overlay").classList.add("hidden");
+            showToast("No se pudo leer la imagen seleccionada.", "error");
+            return;
+          }
+
+          const previewImg = document.getElementById("modal-preview-img");
+          previewImg.src = rawDataUrl;
+
+          const compressedDataUrl = await compressDataUrl(rawDataUrl, 800, 0.75);
+          currentImageBase64 = compressedDataUrl;
+          previewImg.src = compressedDataUrl;
+
+          const sizeBadge = document.getElementById("photo-size-badge");
+          if (sizeBadge) {
+            sizeBadge.textContent = "Foto optimizada: ~" + estimateBase64KB(compressedDataUrl) + " KB";
+            sizeBadge.classList.remove("hidden");
+          }
+
+          document.getElementById("meal-modal-subtitle").textContent = "Verifica o edita los valores detectados";
+          await analyzeImageWithGemini(compressedDataUrl);
+        };
+
+        reader.onerror = function () {
+          document.getElementById("ai-loading-overlay").classList.add("hidden");
+          const aiBanner = document.getElementById("ai-notice-banner");
+          const aiNoticeText = document.getElementById("ai-notice-text");
+          aiNoticeText.textContent = "Error al leer el archivo de imagen desde tu dispositivo. Intenta con otra fotografía o ingrésala manualmente.";
+          aiBanner.classList.remove("hidden");
+        };
+
+        reader.onloadend = function () {
+          inputEl.value = "";
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      /* Llamada a Gemini API con timeout por intento (15s) mediante AbortController */
+      async function fetchWithTimeout(url, options, timeoutMs, modelLabel) {
+        stopActiveAiRequest();
+        userAbortedAi = false;
+        const controller = new AbortController();
+        activeAiController = controller;
+
+        let secondsLeft = Math.ceil(timeoutMs / 1000);
+        const titleEl = document.getElementById("ai-loading-title");
+        const prefixText = modelLabel
+          ? "Analizando con " + modelLabel + "... ("
+          : "Analizando plato con Gemini AI... (";
+
+        if (titleEl) {
+          titleEl.textContent = prefixText + secondsLeft + "s)";
+        }
+
+        activeAiCountdownTimer = setInterval(function () {
+          secondsLeft = Math.max(0, secondsLeft - 1);
+          if (titleEl) {
+            titleEl.textContent = prefixText + secondsLeft + "s)";
+          }
+        }, 1000);
+
+        const timeoutId = setTimeout(function () {
+          try {
+            controller.abort();
+          } catch (e) {}
+        }, timeoutMs);
+
+        try {
+          const fetchOpts = Object.assign({}, options, { signal: controller.signal });
+          const response = await fetch(url, fetchOpts);
+          if (!response.ok) {
+            let apiErrMsg = "";
+            try {
+              const errJson = await response.json();
+              if (errJson && errJson.error && errJson.error.message) {
+                apiErrMsg = errJson.error.message;
+              }
+            } catch (e) {}
+            const httpErr = new Error(apiErrMsg || "HTTP " + response.status);
+            httpErr.status = response.status;
+            throw httpErr;
+          }
+          return response;
+        } finally {
+          clearTimeout(timeoutId);
+          if (activeAiCountdownTimer) {
+            clearInterval(activeAiCountdownTimer);
+            activeAiCountdownTimer = null;
+          }
+          activeAiController = null;
+        }
+      }
+
+      function buildFriendlyAiErrorMessage(err) {
+        if (userAbortedAi) {
+          return "Análisis cancelado manualmente. Puedes completar los campos abajo o pulsar 'Re-analizar IA' cuando quieras.";
+        }
+        if (err && err.name === "AbortError") {
+          return "Tiempo de espera agotado tras probar los modelos disponibles. Tu conexión móvil tardó demasiado en subir la foto. Toca 'Re-analizar IA' o ingresa los datos manualmente abajo.";
+        }
+        const status = err && err.status;
+        if (status === 400 || status === 401 || status === 403) {
+          return "API Key inválida o sin permisos en Google AI Studio. Verifica tu clave en Perfil o usando el botón de abajo.";
+        }
+        if (status === 404) {
+          return "Ningún modelo compatible con tu API Key respondió (HTTP 404). Verifica en Google AI Studio que tu proyecto tenga habilitada la API de Gemini.";
+        }
+        if (status === 429) {
+          return "Todos los modelos disponibles alcanzaron temporalmente el límite de cuota gratuita (HTTP 429). Espera unos segundos y vuelve a intentar.";
+        }
+        if (status === 500 || status === 503) {
+          return "Todos los modelos compatibles de Gemini están temporalmente saturados (HTTP " + status + "). Intenta nuevamente en unos segundos.";
+        }
+        const rawMsg = String((err && err.message) || "");
+        if (!navigator.onLine || err instanceof TypeError || /failed to fetch|networkerror|load failed/i.test(rawMsg)) {
+          return "Sin conexión a internet o bloqueo de red del navegador (si abriste el archivo desde Descargas content://, ábrelo desde una URL https:// o revisa tus datos móviles).";
+        }
+        return "No se pudo completar el análisis con IA (" + (rawMsg || "error inesperado") + "). Puedes reintentar o guardar manualmente abajo.";
+      }
+
+      async function analyzeImageWithGemini(base64DataUrl) {
+        const aiOverlay = document.getElementById("ai-loading-overlay");
+        const aiBanner = document.getElementById("ai-notice-banner");
+        const aiNoticeText = document.getElementById("ai-notice-text");
+        const aiSubEl = document.getElementById("ai-loading-sub");
+        const activeKey = getEffectiveApiKey();
+
+        if (!activeKey) {
+          aiOverlay.classList.add("hidden");
+          aiNoticeText.textContent =
+            "Modo offline/manual: No hay una Gemini API Key configurada en este navegador. Tu foto optimizada se cargó correctamente: completa los datos abajo o configura tu clave gratuita.";
+          aiBanner.classList.remove("hidden");
+          return;
+        }
+
+        if (!navigator.onLine) {
+          aiOverlay.classList.add("hidden");
+          aiNoticeText.textContent =
+            "Sin conexión a internet o bloqueo de red del navegador (si abriste el archivo desde Descargas content://, ábrelo desde una URL https:// o revisa tus datos móviles).";
+          aiBanner.classList.remove("hidden");
+          return;
+        }
+
+        aiOverlay.classList.remove("hidden");
+        aiBanner.classList.add("hidden");
+
+        try {
+          const commaIdx = base64DataUrl.indexOf(",");
+          const headerPart = commaIdx !== -1 ? base64DataUrl.slice(0, commaIdx) : "";
+          const pureBase64 = commaIdx !== -1 ? base64DataUrl.slice(commaIdx + 1) : base64DataUrl;
+          const mimeMatch = headerPart.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64/);
+          const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+
+          const payload = {
+            contents: [
+              {
+                parts: [
+                  {
+                    text:
+                      "Analiza esta fotografía de comida en español. Identifica el nombre del plato (dishName), estima la categoría más adecuada (category: 'Desayuno', 'Almuerzo', 'Snack' o 'Cena'), calcula calorías totales (calories), gramos de proteínas (protein), carbohidratos (carbs), grasas (fat), lista los ingredientes principales (notes) y brinda un consejo nutricional breve (tip)."
+                  },
+                  {
+                    inlineData: {
+                      mimeType: mimeType,
+                      data: pureBase64
+                    }
+                  }
+                ]
+              }
+            ],
+            generationConfig: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: "OBJECT",
+                properties: {
+                  dishName: { type: "STRING" },
+                  category: { type: "STRING" },
+                  calories: { type: "NUMBER" },
+                  protein: { type: "NUMBER" },
+                  carbs: { type: "NUMBER" },
+                  fat: { type: "NUMBER" },
+                  notes: { type: "STRING" },
+                  tip: { type: "STRING" }
+                },
+                required: [
+                  "dishName",
+                  "category",
+                  "calories",
+                  "protein",
+                  "carbs",
+                  "fat",
+                  "notes",
+                  "tip"
+                ]
+              }
+            }
+          };
+
+          if (aiSubEl) {
+            aiSubEl.textContent = "Consultando modelos compatibles con tu API Key...";
+          }
+
+          const candidates = await discoverCandidateModels(activeKey, false);
+          let response = null;
+          let usedModel = null;
+          let lastAttemptError = null;
+
+          for (let i = 0; i < candidates.length; i++) {
+            if (userAbortedAi) {
+              const abortErr = new Error("Cancelado por el usuario");
+              abortErr.name = "AbortError";
+              throw abortErr;
+            }
+
+            const candidateModel = candidates[i];
+            const hasNext = i < candidates.length - 1;
+
+            if (aiSubEl && i === 0) {
+              aiSubEl.textContent =
+                "Modelo: " + candidateModel + " (" + (i + 1) + "/" + candidates.length + ") • Calculando calorías y macros";
+            }
+
+            const endpoint =
+              "https://generativelanguage.googleapis.com/v1beta/models/" +
+              encodeURIComponent(candidateModel) +
+              ":generateContent?key=" +
+              encodeURIComponent(activeKey);
+
+            try {
+              response = await fetchWithTimeout(
+                endpoint,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(payload)
+                },
+                15000,
+                candidateModel
+              );
+              usedModel = candidateModel;
+              setSavedActiveModel(candidateModel);
+              lastAttemptError = null;
+              break;
+            } catch (attemptErr) {
+              lastAttemptError = attemptErr;
+
+              if (userAbortedAi) {
+                throw attemptErr;
+              }
+
+              const st = attemptErr && attemptErr.status;
+              if (st === 400 || st === 401 || st === 403) {
+                setSavedActiveModel("");
+                throw attemptErr;
+              }
+
+              const isTimeoutOnCandidate = attemptErr && attemptErr.name === "AbortError";
+              const canRetryNext = hasNext && (isRetryableModelStatus(st) || isTimeoutOnCandidate);
+
+              if (canRetryNext) {
+                if (getSavedActiveModel() === candidateModel) {
+                  setSavedActiveModel("");
+                }
+                const reasonLabel = isTimeoutOnCandidate
+                  ? "tiempo agotado"
+                  : st === 503
+                    ? "saturado (503)"
+                    : st === 429
+                      ? "cuota llena (429)"
+                      : "no disponible (404)";
+
+                if (aiSubEl) {
+                  aiSubEl.textContent =
+                    "Modelo " + candidateModel + " " + reasonLabel + ", probando " + candidates[i + 1] + "...";
+                }
+                continue;
+              }
+
+              throw attemptErr;
+            }
+          }
+
+          if (!response || !usedModel) {
+            throw lastAttemptError || new Error("No hubo respuesta de ningún modelo disponible.");
+          }
+
+          const data = await response.json();
+          const rawText =
+            data &&
+            data.candidates &&
+            data.candidates[0] &&
+            data.candidates[0].content &&
+            data.candidates[0].content.parts &&
+            data.candidates[0].content.parts[0] &&
+            data.candidates[0].content.parts[0].text;
+
+          if (!rawText) {
+            throw new Error("La IA devolvió una respuesta vacía.");
+          }
+
+          const parsed = parseGeminiJsonText(rawText);
+          const validCats = ["Desayuno", "Almuerzo", "Snack", "Cena"];
+          const detectedCat = validCats.indexOf(parsed.category) !== -1 ? parsed.category : guessMealCategoryByHour();
+
+          document.getElementById("form-meal-name").value = parsed.dishName || "Comida analizada";
+          document.getElementById("form-meal-category").value = detectedCat;
+          document.getElementById("form-meal-calories").value = Math.round(Number(parsed.calories) || 0);
+          document.getElementById("form-meal-protein").value = Math.round((Number(parsed.protein) || 0) * 10) / 10;
+          document.getElementById("form-meal-carbs").value = Math.round((Number(parsed.carbs) || 0) * 10) / 10;
+          document.getElementById("form-meal-fats").value = Math.round((Number(parsed.fat) || 0) * 10) / 10;
+          document.getElementById("form-meal-notes").value = parsed.notes || parsed.ingredients || "";
+          document.getElementById("form-meal-tip").value = parsed.tip || "";
+
+          showToast("¡Plato analizado con " + usedModel + "!", "success");
+        } catch (err) {
+          aiNoticeText.textContent = buildFriendlyAiErrorMessage(err);
+          aiBanner.classList.remove("hidden");
+        } finally {
+          aiOverlay.classList.add("hidden");
+        }
+      }
+
+      async function testApiKeyConnection() {
+        const val = document.getElementById("prof-api-key-input").value.trim();
+        if (val) saveUserApiKey(val);
+        const key = getEffectiveApiKey();
+        if (!key) {
+          showToast("Primero pega tu Gemini API Key.", "warning");
+          return;
+        }
+
+        const testBtn = document.getElementById("btn-prof-key-test");
+        if (testBtn) {
+          testBtn.disabled = true;
+          testBtn.textContent = "Probando...";
+        }
+
+        showToast("Detectando modelos disponibles de Gemini...", "info");
+        try {
+          const candidates = await discoverCandidateModels(key, true);
+          let workingModel = null;
+          let lastError = null;
+
+          for (let i = 0; i < candidates.length; i++) {
+            const candidate = candidates[i];
+            const hasNext = i < candidates.length - 1;
+            const url =
+              "https://generativelanguage.googleapis.com/v1beta/models/" +
+              encodeURIComponent(candidate) +
+              ":generateContent?key=" +
+              encodeURIComponent(key);
+
+            const controller = new AbortController();
+            const timer = setTimeout(function () {
+              try {
+                controller.abort();
+              } catch (e) {}
+            }, 15000);
+
+            try {
+              const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                signal: controller.signal,
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: "Responde solo OK" }] }]
+                })
+              });
+              clearTimeout(timer);
+
+              if (res.ok) {
+                workingModel = candidate;
+                break;
+              }
+
+              const errObj = new Error("HTTP " + res.status);
+              errObj.status = res.status;
+              lastError = errObj;
+
+              if (res.status === 400 || res.status === 401 || res.status === 403) {
+                throw errObj;
+              }
+
+              if (hasNext && isRetryableModelStatus(res.status)) {
+                showToast(
+                  "Modelo " + candidate + " no disponible/saturado (" + res.status + "), probando " + candidates[i + 1] + "...",
+                  "warning"
+                );
+                continue;
+              }
+
+              throw errObj;
+            } catch (reqErr) {
+              clearTimeout(timer);
+              lastError = reqErr;
+              const st = reqErr && reqErr.status;
+              if (st === 400 || st === 401 || st === 403) {
+                throw reqErr;
+              }
+              const isTimeout = reqErr && reqErr.name === "AbortError";
+              if (hasNext && (isRetryableModelStatus(st) || isTimeout)) {
+                showToast(
+                  "Modelo " + candidate + " no respondió, probando " + candidates[i + 1] + "...",
+                  "warning"
+                );
+                continue;
+              }
+              throw reqErr;
+            }
+          }
+
+          if (!workingModel) {
+            throw lastError || new Error("No se encontró un modelo activo");
+          }
+
+          setSavedActiveModel(workingModel);
+          showToast("Conexión exitosa • Modelo activo: " + workingModel, "success");
+        } catch (err) {
+          setSavedActiveModel("");
+          const st = err && err.status;
+          const msg =
+            st === 400 || st === 401 || st === 403
+              ? "API Key inválida o sin permisos (HTTP " + st + ")"
+              : "Error probando API Key (" + (err.message || "red/clave") + ")";
+          showToast(msg, "error");
+        } finally {
+          if (testBtn) {
+            testBtn.disabled = false;
+            testBtn.textContent = "Probar conexión IA";
+          }
+        }
+      }
+
+      /* =========================================================================
+         MODAL DE PERFIL CORPORAL, API KEY Y METAS
+         ========================================================================= */
+      let selectedModalGoalType = userProfile.goalType || "maintenance";
+
+      function openProfileModal() {
+        document.getElementById("prof-sex").value = userProfile.sex || "male";
+        document.getElementById("prof-age").value = userProfile.age || 36;
+        document.getElementById("prof-height").value = userProfile.height || 182;
+        document.getElementById("prof-weight").value = userProfile.weight || 90.5;
+        document.getElementById("prof-activity").value = String(userProfile.activity || 1.55);
+        selectedModalGoalType = userProfile.goalType || "maintenance";
+
+        syncApiKeyUI();
+        syncGoalCardsUI();
+        refreshProfilePreview();
+        document.getElementById("profile-modal").classList.remove("hidden");
+      }
+
+      function closeProfileModal() {
+        document.getElementById("profile-modal").classList.add("hidden");
+      }
+
+      function syncGoalCardsUI() {
+        document.querySelectorAll(".goal-option-card").forEach(function (card) {
+          card.classList.toggle("selected", card.getAttribute("data-goal") === selectedModalGoalType);
+        });
+      }
+
+      function readProfileDraft() {
+        return {
+          sex: document.getElementById("prof-sex").value,
+          age: Number(document.getElementById("prof-age").value) || 36,
+          height: Number(document.getElementById("prof-height").value) || 182,
+          weight: Number(document.getElementById("prof-weight").value) || 90.5,
+          activity: Number(document.getElementById("prof-activity").value) || 1.55,
+          goalType: selectedModalGoalType
+        };
+      }
+
+      function refreshProfilePreview() {
+        const draft = readProfileDraft();
+        const t = calculateTargets(draft);
+        document.getElementById("prev-bmr").textContent = formatNum(t.bmr);
+        document.getElementById("prev-tdee").textContent = formatNum(t.tdee);
+        document.getElementById("prev-target").textContent = formatNum(t.targetCalories);
+        document.getElementById("prev-min").textContent = formatNum(t.minCalories);
+        document.getElementById("prev-max").textContent = formatNum(t.maxCalories);
+        document.getElementById("prev-prot").textContent = t.proteinGrams + "g";
+        document.getElementById("prev-prot-sub").textContent = t.protPerKg + " g/kg";
+        document.getElementById("prev-carb").textContent = t.carbGrams + "g";
+        document.getElementById("prev-fat").textContent = t.fatGrams + "g";
+      }
+
+      /* =========================================================================
+         INICIALIZACIÓN DE EVENTOS AL CARGAR EL DOM
+         ========================================================================= */
+      function initApp() {
+        initTheme();
+        syncApiKeyUI();
+        hydrateMealsFromIDB();
+        renderDashboard();
+        renderCatalog();
+
+        /* Botón tema claro/oscuro */
+        document.getElementById("btn-theme-toggle").addEventListener("click", function () {
+          const nextDark = !document.documentElement.classList.contains("dark");
+          applyTheme(nextDark);
+          localStorage.setItem(LS_KEYS.THEME, nextDark ? "dark" : "light");
+        });
+
+        /* Botones abrir / cerrar modal Perfil */
+        document.getElementById("btn-open-profile").addEventListener("click", openProfileModal);
+        document.getElementById("btn-edit-profile-dash").addEventListener("click", openProfileModal);
+        document.getElementById("btn-close-profile-modal").addEventListener("click", closeProfileModal);
+        document.getElementById("btn-cancel-profile").addEventListener("click", closeProfileModal);
+
+        /* Gestión de Gemini API Key dentro del Modal de Foto */
+        document.getElementById("btn-toggle-inline-key").addEventListener("click", function () {
+          const box = document.getElementById("inline-key-box");
+          box.classList.toggle("hidden");
+          document.getElementById("inline-api-key-input").value = getEffectiveApiKey();
+        });
+
+        document.getElementById("btn-inline-key-eye").addEventListener("click", function () {
+          const inp = document.getElementById("inline-api-key-input");
+          inp.type = inp.type === "password" ? "text" : "password";
+        });
+
+        document.getElementById("btn-inline-key-save").addEventListener("click", function () {
+          const val = document.getElementById("inline-api-key-input").value;
+          saveUserApiKey(val);
+          if (getEffectiveApiKey()) {
+            showToast("API Key guardada. Analizando foto...", "success");
+            if (currentImageBase64) {
+              analyzeImageWithGemini(currentImageBase64);
+            }
+          } else {
+            showToast("Ingresa una clave válida de Google AI Studio.", "warning");
+          }
+        });
+
+        /* Gestión de Gemini API Key dentro del Modal de Perfil */
+        document.getElementById("btn-prof-key-eye").addEventListener("click", function () {
+          const inp = document.getElementById("prof-api-key-input");
+          inp.type = inp.type === "password" ? "text" : "password";
+        });
+
+        document.getElementById("btn-prof-key-save").addEventListener("click", function () {
+          const val = document.getElementById("prof-api-key-input").value;
+          saveUserApiKey(val);
+          showToast(getEffectiveApiKey() ? "Gemini API Key guardada en este navegador" : "Clave eliminada", "success");
+        });
+
+        document.getElementById("btn-prof-key-clear").addEventListener("click", function () {
+          saveUserApiKey("");
+          showToast("Gemini API Key borrada", "info");
+        });
+
+        document.getElementById("btn-prof-key-test").addEventListener("click", testApiKeyConnection);
+
+        /* Inputs limpios vinculados por <label for="..."> (evento 'change') */
+        document.getElementById("input-camera").addEventListener("change", handlePhotoInputChange);
+        document.getElementById("input-gallery").addEventListener("change", handlePhotoInputChange);
+        document.getElementById("input-change-photo").addEventListener("change", handlePhotoInputChange);
+
+        /* Exportar / Importar respaldo JSON */
+        document.getElementById("btn-export-json").addEventListener("click", function () {
+          const backupObj = {
+            version: 3,
+            exportedAt: new Date().toISOString(),
+            profile: userProfile,
+            meals: allMeals,
+            favorites: favoriteMeals
+          };
+          const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "nutrilens-respaldo-" + getTodayISO() + ".json";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast("Respaldo JSON descargado", "success");
+        });
+
+        document.getElementById("input-import-json").addEventListener("change", function (e) {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            try {
+              const data = JSON.parse(ev.target.result);
+              if (data.profile) {
+                userProfile = data.profile;
+                saveJSON(LS_KEYS.PROFILE, userProfile);
+              }
+              if (Array.isArray(data.meals)) {
+                allMeals = data.meals;
+                persistMealsSafely(allMeals, true);
+              }
+              if (Array.isArray(data.favorites)) {
+                favoriteMeals = data.favorites;
+                saveJSON(LS_KEYS.FAVORITES, favoriteMeals);
+              }
+              openProfileModal();
+              renderDashboard();
+              renderCatalog();
+              showToast("Historial y perfil restaurados correctamente", "success");
+            } catch (err) {
+              showToast("Archivo de respaldo inválido.", "error");
+            }
+          };
+          reader.onloadend = function () {
+            e.target.value = "";
+          };
+          reader.readAsText(file);
+        });
+
+        /* Inputs del formulario Perfil en tiempo real */
+        ["prof-sex", "prof-age", "prof-height", "prof-weight", "prof-activity"].forEach(function (id) {
+          const el = document.getElementById(id);
+          el.addEventListener("input", refreshProfilePreview);
+          el.addEventListener("change", refreshProfilePreview);
+        });
+
+        document.querySelectorAll(".goal-option-card").forEach(function (card) {
+          card.addEventListener("click", function () {
+            selectedModalGoalType = card.getAttribute("data-goal");
+            syncGoalCardsUI();
+            refreshProfilePreview();
+          });
+        });
+
+        document.getElementById("profile-form").addEventListener("submit", function (e) {
+          e.preventDefault();
+          userProfile = readProfileDraft();
+          saveJSON(LS_KEYS.PROFILE, userProfile);
+          const keyFieldVal = document.getElementById("prof-api-key-input").value.trim();
+          if (keyFieldVal) saveUserApiKey(keyFieldVal);
+          closeProfileModal();
+          renderDashboard();
+          const t = calculateTargets(userProfile);
+          showToast("Metas actualizadas: " + t.goalLabel + " (" + formatNum(t.targetCalories) + " kcal)", "success");
+        });
+
+        /* Navegación por fecha */
+        document.getElementById("date-filter").addEventListener("change", function (e) {
+          if (e.target.value) {
+            selectedDate = e.target.value;
+            renderDashboard();
+          }
+        });
+
+        document.getElementById("btn-today").addEventListener("click", function () {
+          selectedDate = getTodayISO();
+          renderDashboard();
+        });
+
+        document.getElementById("btn-prev-day").addEventListener("click", function () {
+          const p = selectedDate.split("-").map(Number);
+          const d = new Date(p[0], p[1] - 1, p[2] - 1);
+          selectedDate = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+          renderDashboard();
+        });
+
+        document.getElementById("btn-next-day").addEventListener("click", function () {
+          const p = selectedDate.split("-").map(Number);
+          const d = new Date(p[0], p[1] - 1, p[2] + 1);
+          selectedDate = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+          renderDashboard();
+        });
+
+        /* Pestañas Con Foto (IA) vs Sin Foto (Opciones / Manual) */
+        document.getElementById("tab-mode-photo").addEventListener("click", function () {
+          setRegistrationMode("photo");
+        });
+
+        document.getElementById("tab-mode-manual").addEventListener("click", function () {
+          setRegistrationMode("manual");
+        });
+
+        document.getElementById("btn-shortcut-manual").addEventListener("click", function () {
+          setRegistrationMode("manual");
+        });
+
+        document.getElementById("btn-reanalyze-ai").addEventListener("click", function () {
+          if (currentImageBase64) {
+            analyzeImageWithGemini(currentImageBase64);
+          }
+        });
+
+        document.getElementById("btn-cancel-ai-analysis").addEventListener("click", function () {
+          userAbortedAi = true;
+          stopActiveAiRequest();
+          document.getElementById("ai-loading-overlay").classList.add("hidden");
+        });
+
+        /* Catálogo sin foto: buscador, categorías y crear personalizada */
+        document.getElementById("catalog-search").addEventListener("input", renderCatalog);
+
+        document.querySelectorAll(".cat-pill-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll(".cat-pill-btn").forEach(function (b) { b.classList.remove("active"); });
+            btn.classList.add("active");
+            activeCatalogCat = btn.getAttribute("data-cat");
+            renderCatalog();
+          });
+        });
+
+        document.getElementById("btn-create-custom-meal").addEventListener("click", function () {
+          openMealModal({ type: "custom" });
+        });
+
+        /* Multiplicadores de porción en modal */
+        document.querySelectorAll(".mult-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            applyMultiplier(Number(btn.getAttribute("data-factor")));
+          });
+        });
+
+        /* Modal Comida: cerrar y guardar */
+        document.getElementById("btn-close-meal-modal").addEventListener("click", closeMealModal);
+        document.getElementById("btn-cancel-meal-form").addEventListener("click", closeMealModal);
+
+        document.getElementById("meal-form").addEventListener("submit", function (e) {
+          e.preventDefault();
+          const editId = document.getElementById("form-meal-id").value;
+          const existing = editId ? allMeals.find(function (m) { return m.id === editId; }) : null;
+
+          const mealRecord = {
+            id: editId || "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+            date: existing ? existing.date : selectedDate,
+            time: document.getElementById("form-meal-time").value || getCurrentHHMM(),
+            name: document.getElementById("form-meal-name").value.trim(),
+            category: document.getElementById("form-meal-category").value,
+            calories: Math.round(Number(document.getElementById("form-meal-calories").value) || 0),
+            protein: Number(document.getElementById("form-meal-protein").value) || 0,
+            carbs: Number(document.getElementById("form-meal-carbs").value) || 0,
+            fats: Number(document.getElementById("form-meal-fats").value) || 0,
+            notes: document.getElementById("form-meal-notes").value.trim(),
+            tip: document.getElementById("form-meal-tip").value.trim(),
+            image: currentImageBase64 || null
+          };
+
+          if (!editId && document.getElementById("form-save-favorite").checked && mealRecord.name) {
+            favoriteMeals.unshift({
+              id: "fav_" + Date.now(),
+              name: mealRecord.name,
+              category: mealRecord.category,
+              portion: mealRecord.notes || "Porción guardada",
+              calories: mealRecord.calories,
+              protein: mealRecord.protein,
+              carbs: mealRecord.carbs,
+              fats: mealRecord.fats,
+              tip: mealRecord.tip
+            });
+            saveJSON(LS_KEYS.FAVORITES, favoriteMeals);
+            renderCatalog();
+          }
+
+          if (editId) {
+            allMeals = allMeals.map(function (m) {
+              return m.id === editId ? mealRecord : m;
+            });
+          } else {
+            allMeals.push(mealRecord);
+          }
+
+          persistMealsSafely(allMeals, true);
+          closeMealModal();
+          renderDashboard();
+          showToast(editId ? "Comida actualizada" : "Comida registrada correctamente", "success");
+        });
+
+        /* Filtro historial y modal de eliminación */
+        document.getElementById("history-cat-filter").addEventListener("change", renderDashboard);
+
+        document.getElementById("btn-cancel-delete").addEventListener("click", function () {
+          pendingDeleteId = null;
+          document.getElementById("delete-modal").classList.add("hidden");
+        });
+
+        document.getElementById("btn-confirm-delete").addEventListener("click", function () {
+          if (pendingDeleteId) {
+            allMeals = allMeals.filter(function (m) { return m.id !== pendingDeleteId; });
+            persistMealsSafely(allMeals, true);
+            pendingDeleteId = null;
+            document.getElementById("delete-modal").classList.add("hidden");
+            renderDashboard();
+            showToast("Comida eliminada", "info");
+          }
+        });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initApp);
+      } else {
+        initApp();
+      }
+    })();
+  </script>
+</body>
+</html>
