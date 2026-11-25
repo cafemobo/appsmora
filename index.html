@@ -1,1 +1,59 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal de Micro-Apps</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+    h1 { font-size: 1.5rem; margin: 0 0 6px; }
+    p { color: var(--muted); margin: 0 0 20px; font-size: 0.95rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      max-width: 600px;
+    }
+    .app-card {
+      display: block;
+      background: var(--card);
+      color: var(--text);
+      text-decoration: none;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .app-card:active { transform: scale(0.99); border-color: var(--accent); }
+    .app-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+    .app-desc { font-size: 0.9rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <h1>Mis Micro-Apps</h1>
+  <p>Acceso rápido desde el celular</p>
+  <div class="grid">
+    <a class="app-card" href="./calorias/">
+      <div class="app-title">Contador de calorías</div>
+      <div class="app-desc">Registro rápido de comidas y consumo diario</div>
+    </a>
+    <a class="app-card" href="./plantillas/">
+      <div class="app-title">Creador de plantillas</div>
+      <div class="app-desc">Generación rápida de textos y estructuras reutilizables</div>
+    </a>
+  </div>
+</body>
+</html>
