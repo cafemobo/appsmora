@@ -104,7 +104,6 @@
     .hidden { display: none !important; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
-    /* Pantalla de bloqueo PIN */
     .lock-screen {
       position: fixed;
       inset: 0;
@@ -152,7 +151,6 @@
     .key-btn.action { font-size: 13px; font-weight: 700; color: var(--text-secondary); }
     .key-btn.unlock { background-color: var(--emerald-600); border-color: var(--emerald-600); color: #FFFFFF; }
 
-    /* Encabezado */
     .app-header {
       position: sticky;
       top: 0;
@@ -236,7 +234,6 @@
       border: 1px solid var(--border-color);
     }
 
-    /* Multi-perfil + Sync */
     .profiles-sync-bar {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -684,7 +681,6 @@
 
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- Pantalla de Bloqueo PIN (0515) -->
   <div id="pin-lock-screen" class="lock-screen">
     <div class="lock-card">
       <div style="width:48px; height:48px; margin:0 auto; border-radius:16px; background:var(--emerald-50); color:var(--emerald-600); display:flex; align-items:center; justify-content:center; border:1px solid var(--emerald-200);">
@@ -930,7 +926,6 @@
 
   </main>
 
-  <!-- Modal Comida -->
   <div id="meal-modal" class="modal-backdrop hidden">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -1039,7 +1034,6 @@
     </div>
   </div>
 
-  <!-- Modal Perfil -->
   <div id="profile-modal" class="modal-backdrop hidden">
     <div class="modal-dialog wide">
       <div class="modal-header">
@@ -1149,7 +1143,6 @@
     </div>
   </div>
 
-  <!-- Modal Eliminación -->
   <div id="delete-modal" class="modal-backdrop hidden" style="align-items:center; padding:16px;">
     <div class="modal-dialog" style="max-width:360px; border-radius:24px; padding:22px; text-align:center; gap:14px;">
       <strong style="font-size:16px;">¿Eliminar esta comida?</strong>
@@ -1254,7 +1247,6 @@
       function getProfileMeals() { return allMeals.filter(function (m) { return (m.profileId || "carlos") === activeProfileId; }); }
       function getProfileFavorites() { return favoriteMeals.filter(function (f) { return (f.profileId || "carlos") === activeProfileId; }); }
 
-      /* PIN */
       function renderPinDots(isError) {
         document.querySelectorAll("#pin-dots .pin-dot").forEach(function (dot, idx) {
           dot.classList.toggle("filled", idx < pinBuffer.length);
@@ -1287,64 +1279,7 @@
           }, 450);
         }
       }
-function normalizeDateLocal(rawDate) {
-  if (!rawDate) return "";
-  const s = String(rawDate).trim();
-  const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (isoMatch) return isoMatch[1];
 
-  const parsed = new Date(s);
-  if (!isNaN(parsed.getTime())) {
-    const parts = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "America/Bogota",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).formatToParts(parsed);
-    const y = parts.find(function (p) { return p.type === "year"; });
-    const m = parts.find(function (p) { return p.type === "month"; });
-    const d = parts.find(function (p) { return p.type === "day"; });
-    if (y && m && d) return y.value + "-" + m.value + "-" + d.value;
-  }
-  return s;
-}
-
-function mergeRemoteMeals(remoteList) {
-  if (!Array.isArray(remoteList) || remoteList.length === 0) return;
-
-  const localPhotoMap = {};
-  allMeals.forEach(function (m) {
-    if (m.image) localPhotoMap[m.id] = m.image;
-  });
-
-  const mergedById = {};
-  allMeals.forEach(function (m) {
-    mergedById[m.id] = m;
-  });
-
-  remoteList.forEach(function (remote) {
-    if (!remote || !remote.id) return;
-    const id = String(remote.id).trim();
-    const existingLocal = mergedById[id];
-    const normDate = normalizeDateLocal(remote.date) || (existingLocal && existingLocal.date) || "";
-    const normProfile = String(remote.profileId || (existingLocal && existingLocal.profileId) || "carlos")
-      .trim()
-      .toLowerCase();
-
-    mergedById[id] = Object.assign({}, existingLocal || {}, remote, {
-      id: id,
-      date: normDate,
-      profileId: normProfile,
-      image: localPhotoMap[id] || (existingLocal && existingLocal.image) || null
-    });
-  });
-
-  allMeals = Object.keys(mergedById).map(function (k) {
-    return mergedById[k];
-  });
-  persistMealsSafely(allMeals, true);
-  renderDashboard();
-}
       function lockAppScreen() {
         sessionStorage.removeItem(LS_KEYS.UNLOCKED);
         pinBuffer = "";
@@ -1354,7 +1289,28 @@ function mergeRemoteMeals(remoteList) {
         document.getElementById("pin-lock-screen").classList.remove("hidden");
       }
 
-      /* Sincronización con Drive (sin fotos Base64) */
+      function normalizeDateLocal(rawDate) {
+        if (!rawDate) return "";
+        const s = String(rawDate).trim();
+        const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+        if (isoMatch) return isoMatch[1];
+
+        const parsed = new Date(s);
+        if (!isNaN(parsed.getTime())) {
+          const parts = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "America/Bogota",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          }).formatToParts(parsed);
+          const y = parts.find(function (p) { return p.type === "year"; });
+          const m = parts.find(function (p) { return p.type === "month"; });
+          const d = parts.find(function (p) { return p.type === "day"; });
+          if (y && m && d) return y.value + "-" + m.value + "-" + d.value;
+        }
+        return s;
+      }
+
       function getSyncUrl() {
         return (localStorage.getItem(LS_KEYS.SYNC_URL) || DEFAULT_SYNC_URL || "").trim();
       }
@@ -1371,21 +1327,41 @@ function mergeRemoteMeals(remoteList) {
       }
 
       function mergeRemoteMeals(remoteList) {
-        if (!Array.isArray(remoteList)) return;
+        if (!Array.isArray(remoteList) || remoteList.length === 0) {
+          renderDashboard();
+          return;
+        }
+
         const localPhotoMap = {};
-        allMeals.forEach(function (m) { if (m.image) localPhotoMap[m.id] = m.image; });
+        allMeals.forEach(function (m) {
+          if (m.image) localPhotoMap[m.id] = m.image;
+        });
 
         const mergedById = {};
-        allMeals.forEach(function (m) { mergedById[m.id] = m; });
+        allMeals.forEach(function (m) {
+          mergedById[m.id] = m;
+        });
+
         remoteList.forEach(function (remote) {
           if (!remote || !remote.id) return;
-          const existingLocal = mergedById[remote.id];
-          mergedById[remote.id] = Object.assign({}, existingLocal || {}, remote, {
-            image: localPhotoMap[remote.id] || (existingLocal && existingLocal.image) || null
+          const id = String(remote.id).trim();
+          const existingLocal = mergedById[id];
+          const normDate = normalizeDateLocal(remote.date) || (existingLocal && existingLocal.date) || "";
+          const normProfile = String(remote.profileId || (existingLocal && existingLocal.profileId) || "carlos")
+            .trim()
+            .toLowerCase();
+
+          mergedById[id] = Object.assign({}, existingLocal || {}, remote, {
+            id: id,
+            date: normDate,
+            profileId: normProfile,
+            image: localPhotoMap[id] || (existingLocal && existingLocal.image) || null
           });
         });
 
-        allMeals = Object.keys(mergedById).map(function (k) { return mergedById[k]; });
+        allMeals = Object.keys(mergedById).map(function (k) {
+          return mergedById[k];
+        });
         persistMealsSafely(allMeals, true);
         renderDashboard();
       }
@@ -1467,7 +1443,7 @@ function mergeRemoteMeals(remoteList) {
 
         const cleanRecord = {
           id: mealRecord.id,
-          date: mealRecord.date,
+          date: normalizeDateLocal(mealRecord.date) || mealRecord.date,
           time: mealRecord.time,
           profileId: mealRecord.profileId || "carlos",
           category: mealRecord.category,
@@ -1513,10 +1489,10 @@ function mergeRemoteMeals(remoteList) {
           if (await pushMealToDrive(allMeals[i], "upsert")) sent++;
         }
         await pullMealsFromDrive(true);
+        renderDashboard();
         showToast("Sincronización completa (" + sent + " enviados).", "success");
       }
 
-      /* Gemini API Key & Vision */
       function getEffectiveApiKey() {
         if (ENV_API_KEY && ENV_API_KEY.trim() !== "") return ENV_API_KEY.trim();
         try { return (localStorage.getItem(LS_KEYS.API_KEY) || "").trim(); } catch (e) { return ""; }
@@ -1753,7 +1729,6 @@ function mergeRemoteMeals(remoteList) {
         }
       }
 
-      /* Storage & Helpers */
       function openIDB() {
         return new Promise(function (resolve, reject) {
           if (!window.indexedDB) { reject(new Error("Sin IndexedDB")); return; }
@@ -1783,7 +1758,9 @@ function mergeRemoteMeals(remoteList) {
           req.onsuccess = function () {
             const rows = req.result;
             if (Array.isArray(rows) && rows.length > 0) {
-              allMeals = rows.map(function (m) { return Object.assign({ profileId: "carlos" }, m); });
+              allMeals = rows.map(function (m) {
+                return Object.assign({ profileId: "carlos" }, m, { date: normalizeDateLocal(m.date) || m.date });
+              });
               persistMealsSafely(allMeals, false);
               renderDashboard();
             } else if (allMeals.length > 0) {
@@ -1913,7 +1890,9 @@ function mergeRemoteMeals(remoteList) {
         const parts = selectedDate.split("-");
         document.getElementById("date-human-label").textContent = selectedDate === getTodayISO() ? "Hoy" : (parts[2] + "/" + parts[1] + "/" + parts[0]);
 
-        const mealsOfDay = getProfileMeals().filter(function (m) { return m.date === selectedDate; });
+        const mealsOfDay = getProfileMeals().filter(function (m) {
+          return normalizeDateLocal(m.date) === selectedDate;
+        });
         let totalKcal = 0, totalProt = 0, totalCarb = 0, totalFat = 0;
         mealsOfDay.forEach(function (m) {
           totalKcal += Number(m.calories) || 0;
@@ -2033,7 +2012,7 @@ function mergeRemoteMeals(remoteList) {
             const newMeal = {
               id: "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
               profileId: activeProfileId,
-              date: selectedDate,
+              date: normalizeDateLocal(selectedDate) || selectedDate,
               time: getCurrentHHMM(),
               name: item.name,
               category: item.category || "Almuerzo",
@@ -2466,7 +2445,7 @@ function mergeRemoteMeals(remoteList) {
           const mealRecord = {
             id: editId || "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
             profileId: existing ? (existing.profileId || activeProfileId) : activeProfileId,
-            date: existing ? existing.date : selectedDate,
+            date: normalizeDateLocal(existing ? existing.date : selectedDate) || selectedDate,
             time: document.getElementById("form-meal-time").value || getCurrentHHMM(),
             name: document.getElementById("form-meal-name").value.trim(),
             category: document.getElementById("form-meal-category").value,
