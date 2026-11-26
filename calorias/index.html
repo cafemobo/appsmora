@@ -675,6 +675,127 @@
     .toast-item { padding: 11px 14px; border-radius: var(--radius-md); background-color: #0F172A; color: #FFFFFF; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-md); border-left: 4px solid #10B981; }
     .toast-item.warning { border-left-color: #F59E0B; }
     .toast-item.error { border-left-color: #F43F5E; }
+
+    .water-card {
+      background: linear-gradient(135deg, var(--blue-50), var(--bg-card));
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .water-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .water-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .water-badge {
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background-color: var(--blue-50);
+      color: var(--blue-600);
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+    }
+
+    .water-progress-track {
+      width: 100%;
+      height: 10px;
+      background-color: var(--border-color);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .water-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0284C7, #3B82F6);
+      border-radius: var(--radius-full);
+      transition: width 0.4s ease;
+    }
+
+    .water-quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .btn-water-quick {
+      padding: 9px 6px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .btn-water-quick:active {
+      transform: scale(0.97);
+      border-color: var(--blue-500);
+      color: var(--blue-600);
+    }
+
+    .water-custom-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-water-add {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background-color: var(--blue-600);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .btn-water-undo {
+      padding: 10px 11px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .water-log-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .water-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 9px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
   </style>
 </head>
 <body>
@@ -854,6 +975,44 @@
         </div>
       </div>
     </section>
+
+    <section id="water-tracker-card" class="water-card">
+      <div class="water-header">
+        <div class="water-title-group">
+          <span style="font-size:18px;">💧</span>
+          <div>
+            <strong style="font-size:14px; font-weight:800;">Hidratación Diaria</strong>
+            <p id="water-meta-sub" style="font-size:11px; color:var(--text-secondary);">Meta calculada según tu peso y actividad</p>
+          </div>
+        </div>
+        <span id="water-summary-badge" class="water-badge">0 / 3,170 ml</span>
+      </div>
+
+      <div class="water-progress-track">
+        <div id="water-progress-bar" class="water-progress-fill" style="width: 0%;"></div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--text-secondary);">
+        <span id="water-status-text">Faltan 3,170 ml para tu meta diaria</span>
+        <span id="water-pct-text">0%</span>
+      </div>
+
+      <div class="water-quick-grid">
+        <button type="button" class="btn-water-quick" data-water-ml="200">+200 ml</button>
+        <button type="button" class="btn-water-quick" data-water-ml="250">+250 ml</button>
+        <button type="button" class="btn-water-quick" data-water-ml="350">+350 ml</button>
+        <button type="button" class="btn-water-quick" data-water-ml="500">+500 ml</button>
+      </div>
+
+      <div class="water-custom-row">
+        <input type="number" id="water-custom-ml" class="form-control" style="padding:9px 11px; font-size:13px;" min="25" max="3000" step="25" placeholder="Cantidad manual (ml), ej. 300" />
+        <button type="button" id="btn-water-add-custom" class="btn-water-add">Registrar ml</button>
+        <button type="button" id="btn-water-undo" class="btn-water-undo" title="Quitar último registro de agua">Deshacer</button>
+      </div>
+
+      <div id="water-log-chips" class="water-log-chips"></div>
+    </section>
+
 
     <section>
       <div class="mode-switcher">
@@ -1166,6 +1325,7 @@
         PROFILES: "morafit_profiles_v1",
         ACTIVE_PROFILE: "morafit_active_profile_v1",
         MEALS: "morafit_meals_v1",
+        WATER: "morafit_water_v1",
         FAVORITES: "morafit_favorites_v1",
         THEME: "morafit_theme_v1",
         API_KEY: "morafit_gemini_api_key",
@@ -1218,7 +1378,16 @@
       let activeProfileId = localStorage.getItem(LS_KEYS.ACTIVE_PROFILE) || "carlos";
       if (!profilesMap[activeProfileId]) activeProfileId = "carlos";
 
-      let allMeals = loadJSON(LS_KEYS.MEALS, []).map(function (m) { return Object.assign({ profileId: "carlos" }, m); });
+      let allMeals = loadJSON(LS_KEYS.MEALS, []).map(function (m) { return normalizeMealRecord(m, m); });
+      let allWaterLogs = loadJSON(LS_KEYS.WATER, []).map(function (w) {
+        return {
+          id: String(w.id || ("w_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6))),
+          profileId: String(w.profileId || "carlos").trim().toLowerCase() || "carlos",
+          date: normalizeDateLocal(w.date) || getTodayISO(),
+          time: normalizeTimeLocal(w.time),
+          ml: Math.max(0, Math.round(Number(w.ml) || 0))
+        };
+      });
       let favoriteMeals = loadJSON(LS_KEYS.FAVORITES, []).map(function (f) { return Object.assign({ profileId: "carlos" }, f); });
 
       let selectedDate = getTodayISO();
@@ -1291,9 +1460,14 @@
 
       function normalizeDateLocal(rawDate) {
         if (!rawDate) return "";
-        const s = String(rawDate).trim();
+        const s = String(rawDate).replace(/^'+/, "").trim();
         const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
         if (isoMatch) return isoMatch[1];
+
+        const dmyMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (dmyMatch) {
+          return dmyMatch[3] + "-" + dmyMatch[2].padStart(2, "0") + "-" + dmyMatch[1].padStart(2, "0");
+        }
 
         const parsed = new Date(s);
         if (!isNaN(parsed.getTime())) {
@@ -1309,6 +1483,64 @@
           if (y && m && d) return y.value + "-" + m.value + "-" + d.value;
         }
         return s;
+      }
+
+      function normalizeTimeLocal(rawTime) {
+        if (!rawTime) return "12:00";
+        const s = String(rawTime).replace(/^'+/, "").trim();
+        const hmMatch = s.match(/^(\d{1,2}:\d{2})/);
+        if (hmMatch) return hmMatch[1].padStart(5, "0");
+        const parsed = new Date(s);
+        if (!isNaN(parsed.getTime())) {
+          const parts = new Intl.DateTimeFormat("en-GB", {
+            timeZone: "America/Bogota",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+          }).formatToParts(parsed);
+          const h = parts.find(function (p) { return p.type === "hour"; });
+          const min = parts.find(function (p) { return p.type === "minute"; });
+          if (h && min) return h.value + ":" + min.value;
+        }
+        return "12:00";
+      }
+
+      function normalizeMealRecord(raw, fallbackLocal) {
+        const fb = fallbackLocal || {};
+        const id = String(raw.id || fb.id || "").trim();
+        const rawDate = raw.date !== undefined ? raw.date : raw.fecha;
+        const normDate = normalizeDateLocal(rawDate) || normalizeDateLocal(fb.date) || getTodayISO();
+
+        const rawTime = raw.time !== undefined ? raw.time : raw.hora;
+        const normTime = normalizeTimeLocal(rawTime || fb.time);
+
+        const rawProfile = raw.profileId !== undefined ? raw.profileId : raw.perfil;
+        const normProfile = String(rawProfile || fb.profileId || "carlos").trim().toLowerCase() || "carlos";
+
+        const rawCat = raw.category !== undefined ? raw.category : raw.categoria;
+        const rawName = raw.name !== undefined ? raw.name : raw.nombre;
+        const rawCal = raw.calories !== undefined ? raw.calories : raw.calorias;
+        const rawProt = raw.protein !== undefined ? raw.protein : raw.proteinas;
+        const rawCarb = raw.carbs !== undefined ? raw.carbs : raw.carbos;
+        const rawFat = raw.fats !== undefined ? raw.fats : raw.grasas;
+        const rawNotes = raw.notes !== undefined ? raw.notes : raw.notas;
+        const rawTip = raw.tip !== undefined ? raw.tip : raw.consejo;
+
+        return {
+          id: id,
+          profileId: normProfile,
+          date: normDate,
+          time: normTime,
+          category: String(rawCat || fb.category || "Snack").trim() || "Snack",
+          name: String(rawName || fb.name || "Comida").trim() || "Comida",
+          calories: rawCal !== undefined && rawCal !== "" ? (Number(rawCal) || 0) : (Number(fb.calories) || 0),
+          protein: rawProt !== undefined && rawProt !== "" ? (Number(rawProt) || 0) : (Number(fb.protein) || 0),
+          carbs: rawCarb !== undefined && rawCarb !== "" ? (Number(rawCarb) || 0) : (Number(fb.carbs) || 0),
+          fats: rawFat !== undefined && rawFat !== "" ? (Number(rawFat) || 0) : (Number(fb.fats) || 0),
+          notes: rawNotes !== undefined ? String(rawNotes || "") : String(fb.notes || ""),
+          tip: rawTip !== undefined ? String(rawTip || "") : String(fb.tip || ""),
+          image: raw.image || fb.image || null
+        };
       }
 
       function getSyncUrl() {
@@ -1332,31 +1564,16 @@
           return;
         }
 
-        const localPhotoMap = {};
-        allMeals.forEach(function (m) {
-          if (m.image) localPhotoMap[m.id] = m.image;
-        });
-
         const mergedById = {};
         allMeals.forEach(function (m) {
-          mergedById[m.id] = m;
+          if (m && m.id) mergedById[m.id] = normalizeMealRecord(m, m);
         });
 
         remoteList.forEach(function (remote) {
           if (!remote || !remote.id) return;
           const id = String(remote.id).trim();
           const existingLocal = mergedById[id];
-          const normDate = normalizeDateLocal(remote.date) || (existingLocal && existingLocal.date) || "";
-          const normProfile = String(remote.profileId || (existingLocal && existingLocal.profileId) || "carlos")
-            .trim()
-            .toLowerCase();
-
-          mergedById[id] = Object.assign({}, existingLocal || {}, remote, {
-            id: id,
-            date: normDate,
-            profileId: normProfile,
-            image: localPhotoMap[id] || (existingLocal && existingLocal.image) || null
-          });
+          mergedById[id] = normalizeMealRecord(remote, existingLocal);
         });
 
         allMeals = Object.keys(mergedById).map(function (k) {
@@ -1444,7 +1661,7 @@
         const cleanRecord = {
           id: mealRecord.id,
           date: normalizeDateLocal(mealRecord.date) || mealRecord.date,
-          time: mealRecord.time,
+          time: normalizeTimeLocal(mealRecord.time),
           profileId: mealRecord.profileId || "carlos",
           category: mealRecord.category,
           name: mealRecord.name,
@@ -1758,9 +1975,12 @@
           req.onsuccess = function () {
             const rows = req.result;
             if (Array.isArray(rows) && rows.length > 0) {
-              allMeals = rows.map(function (m) {
-                return Object.assign({ profileId: "carlos" }, m, { date: normalizeDateLocal(m.date) || m.date });
+              const mergedById = {};
+              allMeals.forEach(function (m) { if (m && m.id) mergedById[m.id] = normalizeMealRecord(m, m); });
+              rows.forEach(function (r) {
+                if (r && r.id) mergedById[r.id] = normalizeMealRecord(r, mergedById[r.id]);
               });
+              allMeals = Object.keys(mergedById).map(function (k) { return mergedById[k]; });
               persistMealsSafely(allMeals, false);
               renderDashboard();
             } else if (allMeals.length > 0) {
@@ -1866,11 +2086,98 @@
             localStorage.setItem(LS_KEYS.ACTIVE_PROFILE, activeProfileId);
             renderProfilePills();
             renderDashboard();
+            renderWaterTracker();
             renderCatalog();
             pullMealsFromDrive(true);
             showToast("Perfil activo: " + p.name, "info");
           });
           container.appendChild(btn);
+        });
+      }
+
+      function calculateWaterTargetMl(profile) {
+        const weight = Math.max(30, Number(profile.weight) || 90.5);
+        const activity = Number(profile.activity) || 1.55;
+        let baseMl = weight * 35;
+        if (activity >= 1.725) baseMl += 500;
+        else if (activity >= 1.55) baseMl += 300;
+        else if (activity >= 1.375) baseMl += 150;
+        if (profile.goalType === "surplus") baseMl += 200;
+        return Math.round(baseMl / 50) * 50;
+      }
+
+      function getProfileWaterForDate(dateStr) {
+        const normDate = normalizeDateLocal(dateStr) || dateStr;
+        return allWaterLogs
+          .filter(function (w) {
+            return (w.profileId || "carlos") === activeProfileId && normalizeDateLocal(w.date) === normDate;
+          })
+          .sort(function (a, b) { return (a.time || "").localeCompare(b.time || ""); });
+      }
+
+      function addWaterIntake(mlAmount) {
+        const cleanMl = Math.round(Number(mlAmount) || 0);
+        if (cleanMl <= 0) {
+          showToast("Ingresa una cantidad de agua válida en ml.", "warning");
+          return;
+        }
+        const entry = {
+          id: "w_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          profileId: activeProfileId,
+          date: normalizeDateLocal(selectedDate) || selectedDate,
+          time: getCurrentHHMM(),
+          ml: cleanMl
+        };
+        allWaterLogs.push(entry);
+        saveJSON(LS_KEYS.WATER, allWaterLogs);
+        renderWaterTracker();
+        showToast("+" + cleanMl + " ml de agua (" + getCurrentProfile().name + ")", "success");
+      }
+
+      function undoLastWaterIntake() {
+        const normDate = normalizeDateLocal(selectedDate) || selectedDate;
+        for (let i = allWaterLogs.length - 1; i >= 0; i--) {
+          const item = allWaterLogs[i];
+          if ((item.profileId || "carlos") === activeProfileId && normalizeDateLocal(item.date) === normDate) {
+            const removed = allWaterLogs.splice(i, 1)[0];
+            saveJSON(LS_KEYS.WATER, allWaterLogs);
+            renderWaterTracker();
+            showToast("Se eliminó registro de " + removed.ml + " ml", "info");
+            return;
+          }
+        }
+        showToast("No hay registros de agua para deshacer hoy.", "warning");
+      }
+
+      function renderWaterTracker() {
+        const profile = getCurrentProfile();
+        const goalMl = calculateWaterTargetMl(profile);
+        const dayEntries = getProfileWaterForDate(selectedDate);
+        const totalMl = dayEntries.reduce(function (acc, item) { return acc + (Number(item.ml) || 0); }, 0);
+        const pct = Math.min(100, Math.round((totalMl / Math.max(1, goalMl)) * 100));
+        const remainingMl = Math.max(0, goalMl - totalMl);
+
+        document.getElementById("water-meta-sub").textContent =
+          profile.name + " (" + profile.weight + " kg) • Recomendado: " + formatNum(goalMl) + " ml/día";
+        document.getElementById("water-summary-badge").textContent =
+          formatNum(totalMl) + " / " + formatNum(goalMl) + " ml";
+        document.getElementById("water-progress-bar").style.width = pct + "%";
+        document.getElementById("water-pct-text").textContent = pct + "%";
+
+        const statusEl = document.getElementById("water-status-text");
+        if (totalMl >= goalMl) {
+          statusEl.textContent = "¡Meta diaria de hidratación cumplida!";
+        } else {
+          statusEl.textContent = "Te faltan " + formatNum(remainingMl) + " ml para tu meta diaria";
+        }
+
+        const chipsContainer = document.getElementById("water-log-chips");
+        chipsContainer.innerHTML = "";
+        dayEntries.slice().reverse().forEach(function (entry) {
+          const chip = document.createElement("span");
+          chip.className = "water-chip";
+          chip.textContent = (entry.time || "") + " • +" + entry.ml + " ml";
+          chipsContainer.appendChild(chip);
         });
       }
 
@@ -1890,9 +2197,11 @@
         const parts = selectedDate.split("-");
         document.getElementById("date-human-label").textContent = selectedDate === getTodayISO() ? "Hoy" : (parts[2] + "/" + parts[1] + "/" + parts[0]);
 
+        const targetDateNorm = normalizeDateLocal(selectedDate) || selectedDate;
         const mealsOfDay = getProfileMeals().filter(function (m) {
-          return normalizeDateLocal(m.date) === selectedDate;
+          return normalizeDateLocal(m.date) === targetDateNorm;
         });
+
         let totalKcal = 0, totalProt = 0, totalCarb = 0, totalFat = 0;
         mealsOfDay.forEach(function (m) {
           totalKcal += Number(m.calories) || 0;
@@ -1938,6 +2247,7 @@
         document.getElementById("bar-fats").style.width = Math.min(100, (totalFat / Math.max(1, targets.fatGrams)) * 100) + "%";
 
         renderMealsHistory(mealsOfDay);
+        renderWaterTracker();
       }
 
       function renderMealsHistory(mealsOfDay) {
@@ -2282,6 +2592,7 @@
         hydrateMealsFromIDB();
         renderProfilePills();
         renderDashboard();
+        renderWaterTracker();
         renderCatalog();
         if (getSyncUrl()) pullMealsFromDrive(true);
 
@@ -2357,7 +2668,7 @@
             try {
               const data = JSON.parse(ev.target.result);
               if (data.profiles) { profilesMap = Object.assign({}, profilesMap, data.profiles); saveJSON(LS_KEYS.PROFILES, profilesMap); }
-              if (Array.isArray(data.meals)) { allMeals = data.meals; persistMealsSafely(allMeals, true); }
+              if (Array.isArray(data.meals)) { allMeals = data.meals.map(function (m) { return normalizeMealRecord(m, m); }); persistMealsSafely(allMeals, true); }
               if (Array.isArray(data.favorites)) { favoriteMeals = data.favorites; saveJSON(LS_KEYS.FAVORITES, favoriteMeals); }
               renderProfilePills(); renderDashboard(); renderCatalog();
               showToast("Respaldo restaurado", "success");
@@ -2479,6 +2790,27 @@
           renderDashboard();
           showToast(editId ? "Comida actualizada" : "Comida registrada", "success");
         });
+
+        document.querySelectorAll("[data-water-ml]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            addWaterIntake(Number(btn.getAttribute("data-water-ml")));
+          });
+        });
+        document.getElementById("btn-water-add-custom").addEventListener("click", function () {
+          const inp = document.getElementById("water-custom-ml");
+          const val = Number(inp.value);
+          addWaterIntake(val);
+          if (val > 0) inp.value = "";
+        });
+        document.getElementById("water-custom-ml").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const val = Number(e.target.value);
+            addWaterIntake(val);
+            if (val > 0) e.target.value = "";
+          }
+        });
+        document.getElementById("btn-water-undo").addEventListener("click", undoLastWaterIntake);
 
         document.getElementById("history-cat-filter").addEventListener("change", renderDashboard);
         document.getElementById("btn-cancel-delete").addEventListener("click", function () {
