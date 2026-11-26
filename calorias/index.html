@@ -1287,7 +1287,64 @@
           }, 450);
         }
       }
+function normalizeDateLocal(rawDate) {
+  if (!rawDate) return "";
+  const s = String(rawDate).trim();
+  const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (isoMatch) return isoMatch[1];
 
+  const parsed = new Date(s);
+  if (!isNaN(parsed.getTime())) {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Bogota",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(parsed);
+    const y = parts.find(function (p) { return p.type === "year"; });
+    const m = parts.find(function (p) { return p.type === "month"; });
+    const d = parts.find(function (p) { return p.type === "day"; });
+    if (y && m && d) return y.value + "-" + m.value + "-" + d.value;
+  }
+  return s;
+}
+
+function mergeRemoteMeals(remoteList) {
+  if (!Array.isArray(remoteList) || remoteList.length === 0) return;
+
+  const localPhotoMap = {};
+  allMeals.forEach(function (m) {
+    if (m.image) localPhotoMap[m.id] = m.image;
+  });
+
+  const mergedById = {};
+  allMeals.forEach(function (m) {
+    mergedById[m.id] = m;
+  });
+
+  remoteList.forEach(function (remote) {
+    if (!remote || !remote.id) return;
+    const id = String(remote.id).trim();
+    const existingLocal = mergedById[id];
+    const normDate = normalizeDateLocal(remote.date) || (existingLocal && existingLocal.date) || "";
+    const normProfile = String(remote.profileId || (existingLocal && existingLocal.profileId) || "carlos")
+      .trim()
+      .toLowerCase();
+
+    mergedById[id] = Object.assign({}, existingLocal || {}, remote, {
+      id: id,
+      date: normDate,
+      profileId: normProfile,
+      image: localPhotoMap[id] || (existingLocal && existingLocal.image) || null
+    });
+  });
+
+  allMeals = Object.keys(mergedById).map(function (k) {
+    return mergedById[k];
+  });
+  persistMealsSafely(allMeals, true);
+  renderDashboard();
+}
       function lockAppScreen() {
         sessionStorage.removeItem(LS_KEYS.UNLOCKED);
         pinBuffer = "";
