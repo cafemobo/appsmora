@@ -1,524 +1,845 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Pizarra Táctica Fútbol 8 — Legión FC</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pizarra Táctica Fútbol 8 - Legión FC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root {
-      --bg-page: #0b1120;
-      --bg-card: #131c31;
-      --bg-subtle: #1c2844;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.1);
-      --legion-red: #dc2626;
-      --legion-blue: #1d4ed8;
-      --pitch-green: #15803d;
-      --pitch-dark: #166534;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-page);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding-bottom: 48px;
-      -webkit-tap-highlight-color: transparent;
+      font-family: 'Inter', sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    .font-teko {
+      font-family: 'Teko', sans-serif;
     }
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(19, 28, 49, 0.94);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-portal {
-      text-decoration: none;
-      background: var(--bg-subtle);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      padding: 7px 11px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .title-wrap h1 {
-      font-size: 15px;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .title-wrap span {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .badge-kit {
-      font-size: 11px;
-      font-weight: 800;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--legion-red), var(--legion-blue));
-      color: #fff;
-    }
-
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .controls-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .formation-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .form-btn {
-      padding: 10px 8px;
-      border-radius: 10px;
-      background: var(--bg-subtle);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .form-btn.active {
-      background: linear-gradient(135deg, var(--legion-red), var(--legion-blue));
-      border-color: transparent;
-    }
-
-    .actions-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .btn-action {
-      flex: 1;
-      min-width: 120px;
-      padding: 9px 12px;
-      border-radius: 10px;
-      background: var(--bg-subtle);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .pitch {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      max-height: 540px;
-      border-radius: 18px;
-      border: 2px solid rgba(255, 255, 255, 0.35);
+    .pitch-grass-v {
       background: repeating-linear-gradient(
-        to bottom,
-        var(--pitch-green) 0%,
-        var(--pitch-green) 16.66%,
-        var(--pitch-dark) 16.66%,
-        var(--pitch-dark) 33.33%
+        0deg,
+        #15803d 0px,
+        #15803d 40px,
+        #16a34a 40px,
+        #16a34a 80px
       );
-      overflow: hidden;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
     }
-
-    .pitch-line-half {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: rgba(255, 255, 255, 0.35);
-    }
-
-    .pitch-circle {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 92px;
-      height: 92px;
-      transform: translate(-50%, -50%);
-      border: 2px solid rgba(255, 255, 255, 0.35);
-      border-radius: 50%;
-    }
-
-    .pitch-box-top, .pitch-box-bottom {
-      position: absolute;
-      left: 22%;
-      right: 22%;
-      height: 15%;
-      border: 2px solid rgba(255, 255, 255, 0.35);
-    }
-
-    .pitch-box-top { top: -2px; }
-    .pitch-box-bottom { bottom: -2px; }
 
     .player-token {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      user-select: none;
-      z-index: 5;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      touch-action: none;
+    }
+    
+    .player-token:active, .player-token.dragging {
+      transform: scale(1.12);
+      z-index: 50;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+      cursor: grabbing;
     }
 
-    .token-circle {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--legion-red);
-      border: 3px solid var(--legion-blue);
-      color: #fff;
-      font-weight: 900;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-
-    .token-circle.gk {
-      background: #f59e0b;
-      color: #0f172a;
-      border-color: #fff;
-    }
-
-    .token-label {
-      background: rgba(15, 23, 42, 0.88);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 999px;
-      white-space: nowrap;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-    }
-
-    .bench-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 12px;
-    }
-
-    .bench-card h2 {
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 8px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .bench-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .bench-chip {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .helper-text {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-align: center;
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body>
-  <header>
-    <div class="header-left">
-      <a href="../" class="btn-portal">← Portal</a>
-      <div class="title-wrap">
-        <h1>Legión FC • Fútbol 8</h1>
-        <span>Pizarra táctica interactiva</span>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 sticky top-0 z-30 shadow-md">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <a href="../" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 rounded-md text-xs font-semibold flex items-center gap-1 shrink-0 transition-all" title="Volver al portal">
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+        <span>Portal</span>
+      </a>
+      <!-- Miniatura del Escudo Oficial en Header -->
+      <div class="w-10 h-10 rounded-full border border-amber-400/60 overflow-hidden shadow bg-slate-950 flex items-center justify-center shrink-0">
+        <svg viewBox="0 0 400 400" class="w-full h-full">
+          <use href="#legion-crest-svg" />
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <h1 class="text-base font-bold leading-tight tracking-wide flex items-center gap-2 truncate">
+          <span class="truncate">Pizarra Legión FC</span>
+          <span class="text-xs bg-red-950 text-red-400 border border-red-800/80 px-2 py-0.5 rounded-full font-semibold shrink-0">Fútbol 8</span>
+        </h1>
+        <p class="text-[11px] text-slate-400 truncate">Vertical • Titular y Suplente translúcido</p>
       </div>
     </div>
-    <span class="badge-kit">#2 Rojo / Azul</span>
+
+    <!-- Botones de Acción -->
+    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <button onclick="copiarAlPortapapeles()" class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-500 active:scale-95 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 shadow transition-all" title="Copiar código al portapapeles">
+        <i class="fa-solid fa-copy"></i>
+        <span class="hidden sm:inline">Copiar Código</span>
+      </button>
+
+      <button onclick="abrirModalPegar()" class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 shadow transition-all" title="Pegar código guardado">
+        <i class="fa-solid fa-paste"></i>
+        <span class="hidden sm:inline">Pegar Código</span>
+      </button>
+
+      <button onclick="exportarImagen()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 shadow transition-all" title="Descargar como imagen">
+        <i class="fa-solid fa-camera"></i>
+        <span class="hidden md:inline">Descargar Foto</span>
+      </button>
+    </div>
   </header>
 
-  <main class="container">
-    <section class="controls-card">
-      <div class="formation-row" id="formation-buttons">
-        <button type="button" class="form-btn active" data-formation="1-3-3-1">1-3-3-1</button>
-        <button type="button" class="form-btn" data-formation="1-3-2-2">1-3-2-2</button>
-        <button type="button" class="form-btn" data-formation="1-2-4-1">1-2-4-1</button>
+  <!-- Pestañas para Móviles -->
+  <div class="lg:hidden flex bg-slate-900 border-b border-slate-800 text-xs font-semibold">
+    <button id="tab-cancha" onclick="cambiarTab('cancha')" class="flex-1 py-2 text-center text-red-400 border-b-2 border-red-400 flex items-center justify-center gap-1.5">
+      <i class="fa-solid fa-chalkboard-user"></i> Tablero Cancha
+    </button>
+    <button id="tab-suplentes" onclick="cambiarTab('suplentes')" class="flex-1 py-2 text-center text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+      <i class="fa-solid fa-users-viewfinder"></i> Suplentes & Ajustes
+    </button>
+  </div>
+
+  <!-- Contenido Principal -->
+  <main class="flex-1 flex flex-col lg:flex-row p-2 sm:p-4 gap-4 max-w-7xl mx-auto w-full items-start">
+    
+    <!-- Columna Izquierda: Cancha Vertical (100% visible) -->
+    <section id="contenedor-cancha" class="w-full lg:w-[480px] xl:w-[500px] flex flex-col items-center">
+      
+      <!-- Controles rápidos de formación -->
+      <div class="w-full max-w-[420px] bg-slate-900 p-2.5 rounded-t-xl border border-slate-800 flex items-center justify-between gap-2 shadow">
+        <div class="flex items-center gap-1.5">
+          <label class="text-xs font-medium text-slate-300"><i class="fa-solid fa-layer-group text-red-400 mr-1"></i>Formación:</label>
+          <select id="formacion-select" onchange="aplicarFormacion(this.value)" class="bg-slate-800 border border-slate-700 text-white text-xs rounded px-2 py-1 font-semibold focus:outline-none focus:ring-1 focus:ring-red-500">
+            <option value="1-3-3-1">1-3-3-1 (Equilibrada)</option>
+            <option value="1-2-4-1">1-2-4-1 (Posesión / Medios)</option>
+            <option value="1-3-2-2">1-3-2-2 (Doble Delantero)</option>
+            <option value="1-2-3-2">1-2-3-2 (Ataque Directo)</option>
+            <option value="1-3-1-2-1">1-3-1-2-1 (Bloque Dinámico)</option>
+          </select>
+        </div>
+        <button onclick="reiniciarPosiciones()" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2 py-1 rounded transition-colors">
+          <i class="fa-solid fa-rotate-left mr-1"></i>Reordenar
+        </button>
       </div>
-      <div class="actions-row">
-        <button type="button" class="btn-action" id="btn-swap-mode">Modo: Tocar para editar</button>
-        <button type="button" class="btn-action" id="btn-reset-squad">Restablecer plantilla</button>
+
+      <!-- CANCHA VERTICAL CON ESCUDO OFICIAL DE FONDO -->
+      <div class="w-full max-w-[420px] bg-slate-900 p-2 rounded-b-xl border-x border-b border-slate-800 shadow-2xl flex justify-center">
+        <div id="cancha" class="relative w-full aspect-[68/100] pitch-grass-v rounded-lg border-2 border-white/80 overflow-hidden shadow-inner cursor-crosshair">
+          
+          <!-- LÍNEAS TÁCTICAS -->
+          <!-- Línea de medio campo y círculo central -->
+          <div class="absolute w-full top-1/2 -translate-y-1/2 border-b-2 border-white/80 pointer-events-none"></div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border-2 border-white/80 pointer-events-none"></div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white pointer-events-none"></div>
+
+          <!-- ESCUDO OFICIAL LEGIÓN FC DE FONDO -->
+          <div id="escudo-fondo-container" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 pointer-events-none flex items-center justify-center opacity-35 select-none transition-opacity duration-200">
+            <svg id="svg-escudo-legion" viewBox="0 0 400 400" class="w-full h-full drop-shadow-xl">
+              <defs>
+                <!-- Definición del escudo completo de Legión FC -->
+                <g id="legion-crest-svg">
+                  <!-- Aro circular exterior azul marino con relieve -->
+                  <circle cx="200" cy="200" r="185" fill="#0f1e36" stroke="#08101d" stroke-width="8"/>
+                  <circle cx="200" cy="200" r="162" fill="#0b172a" stroke="#1d2e4a" stroke-width="4"/>
+                  
+                  <!-- Arco de texto LEGIÓN FC -->
+                  <path id="text-arc" d="M 75,190 A 135,135 0 0,1 325,190" fill="none" />
+                  <text fill="#d4af37" font-family="'Teko', sans-serif" font-size="34" font-weight="bold" letter-spacing="4">
+                    <textPath href="#text-arc" startOffset="50%" text-anchor="middle">LEGIÓN FC</textPath>
+                  </text>
+
+                  <!-- Espadas Romanas Cruzadas -->
+                  <!-- Espada 1 (Diagonal derecha-abajo) -->
+                  <g>
+                    <!-- Hoja -->
+                    <polygon points="105,105 295,295 285,305 95,115" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+                    <line x1="100" y1="110" x2="290" y2="300" stroke="#94a3b8" stroke-width="2"/>
+                    <!-- Guarda y pomo dorado -->
+                    <circle cx="92" cy="102" r="12" fill="#d4af37" stroke="#996515" stroke-width="2"/>
+                    <rect x="98" y="108" width="22" height="6" transform="rotate(45 98 108)" fill="#b8860b"/>
+                  </g>
+                  <!-- Espada 2 (Diagonal izquierda-abajo) -->
+                  <g>
+                    <polygon points="295,105 105,295 115,305 305,115" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+                    <line x1="300" y1="110" x2="110" y2="300" stroke="#94a3b8" stroke-width="2"/>
+                    <circle cx="308" cy="102" r="12" fill="#d4af37" stroke="#996515" stroke-width="2"/>
+                    <rect x="290" y="112" width="22" height="6" transform="rotate(-45 290 112)" fill="#b8860b"/>
+                  </g>
+
+                  <!-- Escudo Central Bicolor (Rojo y Azul) -->
+                  <g>
+                    <!-- Mitad Izquierda Roja -->
+                    <path d="M 200,165 L 140,165 L 140,240 C 140,285 200,310 200,310 Z" fill="#991b1b" stroke="#d4af37" stroke-width="4"/>
+                    <!-- Mitad Derecha Azul -->
+                    <path d="M 200,165 L 260,165 L 260,240 C 260,285 200,310 200,310 Z" fill="#1e3a8a" stroke="#d4af37" stroke-width="4"/>
+                    
+                    <!-- Borde dorado perimetral -->
+                    <path d="M 140,165 L 260,165 L 260,240 C 260,285 200,310 200,310 C 200,310 140,285 140,240 Z" fill="none" stroke="#d4af37" stroke-width="4"/>
+
+                    <!-- Águila Imperial Dorada en lado izquierdo -->
+                    <g transform="translate(145, 185) scale(0.45)">
+                      <path d="M50,15 L65,40 L95,45 L70,65 L80,95 L50,75 L20,95 L30,65 L5,45 L35,40 Z" fill="#facc15" stroke="#b45309" stroke-width="2"/>
+                      <path d="M25,25 Q50,0 75,25 Q50,45 25,25 Z" fill="#fde047"/>
+                    </g>
+
+                    <!-- Laureles y LFC en lado derecho -->
+                    <g transform="translate(202, 190)">
+                      <!-- Corona de laureles dorada -->
+                      <path d="M 28,15 C 40,25 45,45 35,65 C 25,75 12,78 5,75" fill="none" stroke="#facc15" stroke-width="3" stroke-linecap="round"/>
+                      <path d="M 28,15 C 16,25 11,45 21,65 C 31,75 44,78 51,75" fill="none" stroke="#facc15" stroke-width="3" stroke-linecap="round"/>
+                      <!-- Texto LFC -->
+                      <text x="28" y="52" font-family="'Teko', sans-serif" font-size="22" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="1">LFC</text>
+                    </g>
+                  </g>
+
+                  <!-- Casco de Centurión Romano (Arriba del escudo) -->
+                  <g transform="translate(200, 142)">
+                    <!-- Cresta plumada roja -->
+                    <path d="M -35,-42 C -20,-75 20,-75 35,-42 C 20,-48 -20,-48 -35,-42 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+                    <path d="M -40,-40 C -15,-80 15,-80 40,-40 Z" fill="none" stroke="#b91c1c" stroke-width="4" stroke-dasharray="3,3"/>
+                    
+                    <!-- Casco de Acero -->
+                    <ellipse cx="0" cy="-20" rx="28" ry="24" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
+                    <path d="M -26,-22 L -32,10 L -18,4 Z" fill="#94a3b8" stroke="#334155" stroke-width="1.5"/>
+                    <path d="M 26,-22 L 32,10 L 18,4 Z" fill="#94a3b8" stroke="#334155" stroke-width="1.5"/>
+                    <!-- Visera y detalles dorados -->
+                    <rect x="-18" y="-25" width="36" height="6" rx="2" fill="#d4af37" stroke="#78350f" stroke-width="1"/>
+                  </g>
+
+                  <!-- Balón Clásico en la base -->
+                  <g transform="translate(200, 310)">
+                    <circle cx="0" cy="0" r="22" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+                    <polygon points="0,-10 9,-3 6,8 -6,8 -9,-3" fill="#0f172a"/>
+                    <line x1="0" y1="-10" x2="0" y2="-21" stroke="#000" stroke-width="1.5"/>
+                    <line x1="9" y1="-3" x2="19" y2="-7" stroke="#000" stroke-width="1.5"/>
+                    <line x1="6" y1="8" x2="14" y2="17" stroke="#000" stroke-width="1.5"/>
+                    <line x1="-6" y1="8" x2="-14" y2="17" stroke="#000" stroke-width="1.5"/>
+                    <line x1="-9" y1="-3" x2="-19" y2="-7" stroke="#000" stroke-width="1.5"/>
+                  </g>
+                </g>
+              </defs>
+              <use href="#legion-crest-svg" />
+            </svg>
+            <!-- Imagen externa en caso de subir archivo PNG personalizado -->
+            <img id="img-escudo-custom" class="w-full h-full object-contain hidden" alt="Escudo Propio Legión FC">
+          </div>
+
+          <!-- ÁREA SUPERIOR (Rival / Ataque hacia arriba) -->
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-20 border-b-2 border-x-2 border-white/80 rounded-b-sm pointer-events-none"></div>
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-8 border-b-2 border-x-2 border-white/80 rounded-b-sm pointer-events-none"></div>
+          <div class="absolute top-14 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-white pointer-events-none"></div>
+
+          <!-- ÁREA INFERIOR (Arquero Propio / Defensa) -->
+          <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-20 border-t-2 border-x-2 border-white/80 rounded-t-sm pointer-events-none"></div>
+          <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-8 border-t-2 border-x-2 border-white/80 rounded-t-sm pointer-events-none"></div>
+          <div class="absolute bottom-14 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-white pointer-events-none"></div>
+
+          <!-- Indicador de Dirección de Ataque -->
+          <div class="absolute top-2 right-2 flex flex-col items-center opacity-40 pointer-events-none">
+            <i class="fa-solid fa-arrow-up text-white text-xs"></i>
+            <span class="text-[9px] font-bold text-white tracking-widest uppercase">Ataque</span>
+          </div>
+
+          <!-- CAPA DE FICHAS DE JUGADORES (8 Puestos) -->
+          <div id="jugadores-capa" class="absolute inset-0"></div>
+
+        </div>
+      </div>
+
+      <div class="w-full max-w-[420px] text-center mt-1.5 text-[11px] text-slate-400">
+        <i class="fa-solid fa-hand-pointer mr-1"></i>Arrastra para mover • Toca la ficha para editar
       </div>
     </section>
 
-    <section class="pitch" id="pitch">
-      <div class="pitch-box-top"></div>
-      <div class="pitch-line-half"></div>
-      <div class="pitch-circle"></div>
-      <div class="pitch-box-bottom"></div>
+    <!-- Columna Derecha: Panel de Titulares, Suplentes y Ajustes -->
+    <section id="contenedor-suplentes" class="hidden lg:flex flex-1 w-full flex-col gap-4">
+      
+      <!-- Lista de Jugadores (Titular + Suplente asignado) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg flex flex-col">
+        <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+          <div>
+            <h2 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-users text-red-500"></i> Alineación Legión FC
+            </h2>
+            <p class="text-xs text-slate-400">Titular y su relevo directo asignado</p>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">8 Titulares</span>
+        </div>
+
+        <div id="lista-jugadores-panel" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[440px] overflow-y-auto no-scrollbar pr-1">
+          <!-- Renderizado dinámicamente con JS -->
+        </div>
+      </div>
+
+      <!-- Ajustes del Escudo y Club -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+          <span><i class="fa-solid fa-sliders text-red-400 mr-1.5"></i>Ajustes del Escudo y Tablero</span>
+        </h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Nombre del Equipo</label>
+            <input type="text" id="nombre-equipo" value="Legión FC" oninput="actualizarNombreEquipo(this.value)" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-red-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Opacidad del Escudo</label>
+            <input type="range" id="opacidad-escudo" min="0.10" max="0.80" step="0.05" value="0.35" oninput="ajustarOpacidadEscudo(this.value)" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-500 mt-2">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Cargar Escudo Propio (PNG)</label>
+            <label class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded px-2 py-1.5 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors">
+              <i class="fa-solid fa-upload text-red-400"></i> Subir Foto
+              <input type="file" id="input-escudo" accept="image/*" class="hidden" onchange="cargarImagenEscudo(event)">
+            </label>
+          </div>
+        </div>
+      </div>
+
     </section>
 
-    <section class="bench-card">
-      <h2>Banca / Suplentes (toca para intercambiar)</h2>
-      <div class="bench-list" id="bench-list"></div>
-    </section>
-
-    <p class="helper-text" id="helper-text">
-      Toca un jugador en la cancha para cambiar su nombre o dorsal, o activa "Intercambiar posiciones".
-    </p>
   </main>
 
+  <!-- MODAL: Editar Jugador y su Suplente -->
+  <div id="modal-edicion" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-user-pen text-red-400"></i> Editar Posición: <span id="modal-pos-tag" class="text-red-400">DEF</span>
+        </h3>
+        <button onclick="cerrarModalEdicion()" class="text-slate-400 hover:text-white text-base">✕</button>
+      </div>
+
+      <div class="p-4 space-y-4">
+        <!-- Bloque Titular -->
+        <div class="bg-slate-950/60 p-3 rounded-lg border border-slate-800">
+          <span class="text-[11px] font-bold text-red-400 uppercase tracking-wider block mb-2">
+            <i class="fa-solid fa-star mr-1"></i> Jugador Titular
+          </span>
+          <div class="grid grid-cols-4 gap-2">
+            <div class="col-span-3">
+              <label class="text-[10px] text-slate-400 font-medium block mb-1">Nombre</label>
+              <input type="text" id="edit-titular-nombre" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-red-500">
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 font-medium block mb-1">Dorsal</label>
+              <input type="number" id="edit-titular-numero" min="1" max="99" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-2 py-1.5 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-red-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque Suplente -->
+        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/80">
+          <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider block mb-2">
+            <i class="fa-solid fa-repeat text-sky-400 mr-1"></i> Suplente Asignado (Translúcido)
+          </span>
+          <div class="grid grid-cols-4 gap-2">
+            <div class="col-span-3">
+              <label class="text-[10px] text-slate-400 font-medium block mb-1">Nombre Suplente</label>
+              <input type="text" id="edit-suplente-nombre" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-2.5 py-1.5 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-sky-500">
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 font-medium block mb-1">Dorsal</label>
+              <input type="number" id="edit-suplente-numero" min="1" max="99" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-2 py-1.5 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-sky-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Rol Posicional -->
+        <div>
+          <label class="text-[10px] text-slate-400 font-medium block mb-1">Rol / Sigla en Cancha</label>
+          <input type="text" id="edit-pos-nombre" maxlength="6" class="w-32 bg-slate-800 border border-slate-700 text-white rounded px-2.5 py-1.5 text-xs uppercase font-bold focus:outline-none">
+        </div>
+      </div>
+
+      <div class="bg-slate-800/50 px-4 py-3 border-t border-slate-800 flex items-center justify-end gap-2">
+        <button onclick="cerrarModalEdicion()" class="px-3 py-1.5 text-xs text-slate-300 hover:text-white">Cancelar</button>
+        <button onclick="guardarEdicionJugador()" class="px-4 py-1.5 bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold rounded-lg transition-all">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Pegar Código Guardado -->
+  <div id="modal-pegar" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-paste text-sky-400"></i> Pegar Código Guardado
+        </h3>
+        <button onclick="cerrarModalPegar()" class="text-slate-400 hover:text-white text-base">✕</button>
+      </div>
+      <div class="p-4 space-y-3">
+        <p class="text-xs text-slate-300">Pega aquí el texto copiado para restaurar la formación completa:</p>
+        <textarea id="texto-codigo-pegar" rows="6" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs font-mono text-emerald-400 focus:outline-none focus:ring-1 focus:ring-sky-500 resize-none"></textarea>
+      </div>
+      <div class="bg-slate-800/50 px-4 py-3 border-t border-slate-800 flex items-center justify-end gap-2">
+        <button onclick="cerrarModalPegar()" class="px-3 py-1.5 text-xs text-slate-300 hover:text-white">Cancelar</button>
+        <button onclick="aplicarCodigoPegado()" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded-lg transition-all">Aplicar Formación</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-emerald-600 text-white px-4 py-2.5 rounded-lg text-xs font-semibold shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2 pointer-events-none">
+    <i class="fa-solid fa-circle-check text-sm"></i>
+    <span id="toast-mensaje">Notificación</span>
+  </div>
+
   <script>
-    (function () {
-      "use strict";
+    const formacionesPlantillas = {
+      '1-3-3-1': [
+        { id: 1, pos: 'POR', x: 50, y: 88, isPortero: true, tNom: 'Mora', tNum: 1, sNom: 'Ramos', sNum: 12 },
+        { id: 2, pos: 'LD',  x: 82, y: 73, isPortero: false, tNom: 'Carlos', tNum: 2, sNom: 'Navarro', sNum: 14 },
+        { id: 3, pos: 'DFC', x: 50, y: 75, isPortero: false, tNom: 'Fernando', tNum: 4, sNom: 'Gómez', sNum: 3 },
+        { id: 4, pos: 'LI',  x: 18, y: 73, isPortero: false, tNom: 'Suárez', tNum: 6, sNom: 'Castro', sNum: 15 },
+        { id: 5, pos: 'MD',  x: 80, y: 46, isPortero: false, tNom: 'Lizarazo', tNum: 7, sNom: 'Martínez', sNum: 16 },
+        { id: 6, pos: 'MC',  x: 50, y: 48, isPortero: false, tNom: 'Antonella', tNum: 8, sNom: 'Díaz', sNum: 5 },
+        { id: 7, pos: 'MI',  x: 20, y: 46, isPortero: false, tNom: 'Borbón', tNum: 11, sNom: 'Pardo', sNum: 17 },
+        { id: 8, pos: 'DEL', x: 50, y: 18, isPortero: false, tNom: 'Leah', tNum: 9, sNom: 'Torres', sNum: 19 }
+      ],
+      '1-2-4-1': [
+        { id: 1, pos: 'POR', x: 50, y: 88, isPortero: true, tNom: 'Mora', tNum: 1, sNom: 'Ramos', sNum: 12 },
+        { id: 2, pos: 'DFC', x: 34, y: 74, isPortero: false, tNom: 'Fernando', tNum: 4, sNom: 'Gómez', sNum: 3 },
+        { id: 3, pos: 'DFC', x: 66, y: 74, isPortero: false, tNom: 'Suárez', tNum: 6, sNom: 'Castro', sNum: 15 },
+        { id: 4, pos: 'CAD', x: 84, y: 49, isPortero: false, tNom: 'Carlos', tNum: 2, sNom: 'Navarro', sNum: 14 },
+        { id: 5, pos: 'MCD', x: 60, y: 52, isPortero: false, tNom: 'Antonella', tNum: 8, sNom: 'Díaz', sNum: 5 },
+        { id: 6, pos: 'MCI', x: 40, y: 52, isPortero: false, tNom: 'Lizarazo', tNum: 10, sNom: 'Martínez', sNum: 16 },
+        { id: 7, pos: 'CAI', x: 16, y: 49, isPortero: false, tNom: 'Borbón', tNum: 11, sNom: 'Pardo', sNum: 17 },
+        { id: 8, pos: 'DEL', x: 50, y: 18, isPortero: false, tNom: 'Leah', tNum: 9, sNom: 'Torres', sNum: 19 }
+      ],
+      '1-3-2-2': [
+        { id: 1, pos: 'POR', x: 50, y: 88, isPortero: true, tNom: 'Mora', tNum: 1, sNom: 'Ramos', sNum: 12 },
+        { id: 2, pos: 'LD',  x: 82, y: 73, isPortero: false, tNom: 'Carlos', tNum: 2, sNom: 'Navarro', sNum: 14 },
+        { id: 3, pos: 'DFC', x: 50, y: 75, isPortero: false, tNom: 'Fernando', tNum: 4, sNom: 'Gómez', sNum: 3 },
+        { id: 4, pos: 'LI',  x: 18, y: 73, isPortero: false, tNom: 'Suárez', tNum: 6, sNom: 'Castro', sNum: 15 },
+        { id: 5, pos: 'MC',  x: 63, y: 50, isPortero: false, tNom: 'Antonella', tNum: 8, sNom: 'Díaz', sNum: 5 },
+        { id: 6, pos: 'MC',  x: 37, y: 50, isPortero: false, tNom: 'Lizarazo', tNum: 10, sNom: 'Martínez', sNum: 16 },
+        { id: 7, pos: 'DEL', x: 65, y: 20, isPortero: false, tNom: 'Leah', tNum: 9, sNom: 'Torres', sNum: 19 },
+        { id: 8, pos: 'DEL', x: 35, y: 20, isPortero: false, tNom: 'Borbón', tNum: 11, sNom: 'Pardo', sNum: 17 }
+      ],
+      '1-2-3-2': [
+        { id: 1, pos: 'POR', x: 50, y: 88, isPortero: true, tNom: 'Mora', tNum: 1, sNom: 'Ramos', sNum: 12 },
+        { id: 2, pos: 'DFC', x: 35, y: 74, isPortero: false, tNom: 'Fernando', tNum: 4, sNom: 'Gómez', sNum: 3 },
+        { id: 3, pos: 'DFC', x: 65, y: 74, isPortero: false, tNom: 'Suárez', tNum: 6, sNom: 'Castro', sNum: 15 },
+        { id: 4, pos: 'MD',  x: 82, y: 48, isPortero: false, tNom: 'Carlos', tNum: 2, sNom: 'Navarro', sNum: 14 },
+        { id: 5, pos: 'MC',  x: 50, y: 50, isPortero: false, tNom: 'Antonella', tNum: 8, sNom: 'Díaz', sNum: 5 },
+        { id: 6, pos: 'MI',  x: 18, y: 48, isPortero: false, tNom: 'Lizarazo', tNum: 10, sNom: 'Martínez', sNum: 16 },
+        { id: 7, pos: 'DEL', x: 65, y: 19, isPortero: false, tNom: 'Leah', tNum: 9, sNom: 'Torres', sNum: 19 },
+        { id: 8, pos: 'DEL', x: 35, y: 19, isPortero: false, tNom: 'Borbón', tNum: 11, sNom: 'Pardo', sNum: 17 }
+      ],
+      '1-3-1-2-1': [
+        { id: 1, pos: 'POR', x: 50, y: 88, isPortero: true, tNom: 'Mora', tNum: 1, sNom: 'Ramos', sNum: 12 },
+        { id: 2, pos: 'LD',  x: 82, y: 73, isPortero: false, tNom: 'Carlos', tNum: 2, sNom: 'Navarro', sNum: 14 },
+        { id: 3, pos: 'DFC', x: 50, y: 75, isPortero: false, tNom: 'Fernando', tNum: 4, sNom: 'Gómez', sNum: 3 },
+        { id: 4, pos: 'LI',  x: 18, y: 73, isPortero: false, tNom: 'Suárez', tNum: 6, sNom: 'Castro', sNum: 15 },
+        { id: 5, pos: 'MCD', x: 50, y: 56, isPortero: false, tNom: 'Antonella', tNum: 5, sNom: 'Díaz', sNum: 8 },
+        { id: 6, pos: 'MO',  x: 65, y: 37, isPortero: false, tNom: 'Lizarazo', tNum: 7, sNom: 'Martínez', sNum: 16 },
+        { id: 7, pos: 'MO',  x: 35, y: 37, isPortero: false, tNom: 'Borbón', tNum: 10, sNom: 'Pardo', sNum: 17 },
+        { id: 8, pos: 'DEL', x: 50, y: 18, isPortero: false, tNom: 'Leah', tNum: 9, sNom: 'Torres', sNum: 19 }
+      ]
+    };
 
-      const STORAGE_KEY = "legion_f8_board_v1";
+    let equipoActual = {
+      club: 'Legión FC',
+      formacionClave: '1-3-3-1',
+      colorJugador: '#dc2626',
+      colorPortero: '#0284c7',
+      escudoCustom: null,
+      opacidadEscudo: 0.35,
+      jugadores: JSON.parse(JSON.stringify(formacionesPlantillas['1-3-3-1']))
+    };
 
-      const FORMATIONS = {
-        "1-3-3-1": [
-          { x: 50, y: 89, role: "ARQ", gk: true },
-          { x: 22, y: 71, role: "DFC" },
-          { x: 50, y: 73, role: "DFC" },
-          { x: 78, y: 71, role: "DFC" },
-          { x: 22, y: 47, role: "VOL" },
-          { x: 50, y: 49, role: "MCD" },
-          { x: 78, y: 47, role: "VOL" },
-          { x: 50, y: 22, role: "DEL" }
-        ],
-        "1-3-2-2": [
-          { x: 50, y: 89, role: "ARQ", gk: true },
-          { x: 22, y: 71, role: "DFC" },
-          { x: 50, y: 73, role: "DFC" },
-          { x: 78, y: 71, role: "DFC" },
-          { x: 35, y: 49, role: "MC" },
-          { x: 65, y: 49, role: "MC" },
-          { x: 33, y: 24, role: "DEL" },
-          { x: 67, y: 24, role: "DEL" }
-        ],
-        "1-2-4-1": [
-          { x: 50, y: 89, role: "ARQ", gk: true },
-          { x: 33, y: 72, role: "DFC" },
-          { x: 67, y: 72, role: "DFC" },
-          { x: 16, y: 48, role: "CAR" },
-          { x: 39, y: 50, role: "MC" },
-          { x: 61, y: 50, role: "MC" },
-          { x: 84, y: 48, role: "CAR" },
-          { x: 50, y: 22, role: "DEL" }
-        ]
+    let jugadorEnEdicion = null;
+    let draggingJugador = null;
+    let dragOffset = { x: 0, y: 0 };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      cargarDeLocalStorage();
+      renderizarTodo();
+      configurarDragAndDrop();
+    });
+
+    function renderizarTodo() {
+      renderizarCancha();
+      renderizarPanelJugadores();
+      actualizarControlesUI();
+      actualizarVistaEscudo();
+    }
+
+    function actualizarControlesUI() {
+      document.getElementById('nombre-equipo').value = equipoActual.club;
+      document.getElementById('formacion-select').value = equipoActual.formacionClave;
+      document.getElementById('opacidad-escudo').value = equipoActual.opacidadEscudo || 0.35;
+    }
+
+    function actualizarVistaEscudo() {
+      const container = document.getElementById('escudo-fondo-container');
+      const svg = document.getElementById('svg-escudo-legion');
+      const img = document.getElementById('img-escudo-custom');
+
+      container.style.opacity = equipoActual.opacidadEscudo || 0.35;
+
+      if (equipoActual.escudoCustom) {
+        svg.classList.add('hidden');
+        img.src = equipoActual.escudoCustom;
+        img.classList.remove('hidden');
+      } else {
+        svg.classList.remove('hidden');
+        img.classList.add('hidden');
+      }
+    }
+
+    function ajustarOpacidadEscudo(val) {
+      equipoActual.opacidadEscudo = parseFloat(val);
+      document.getElementById('escudo-fondo-container').style.opacity = val;
+      guardarEnLocalStorage();
+    }
+
+    function cargarImagenEscudo(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        equipoActual.escudoCustom = e.target.result;
+        actualizarVistaEscudo();
+        guardarEnLocalStorage();
+        mostrarToast('¡Escudo propio cargado!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderizarCancha() {
+      const capa = document.getElementById('jugadores-capa');
+      capa.innerHTML = '';
+
+      equipoActual.jugadores.forEach(j => {
+        const token = document.createElement('div');
+        token.className = 'player-token absolute flex flex-col items-center cursor-grab select-none';
+        token.style.left = `${j.x}%`;
+        token.style.top = `${j.y}%`;
+        token.style.transform = 'translate(-50%, -50%)';
+        token.dataset.id = j.id;
+
+        const colorFondo = j.isPortero ? equipoActual.colorPortero : equipoActual.colorJugador;
+
+        token.innerHTML = `
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full shadow-lg flex items-center justify-center font-teko text-base sm:text-lg font-bold border-2 border-white leading-none text-white"
+               style="background-color: ${colorFondo};">
+            ${j.tNum}
+          </div>
+          <div class="mt-0.5 flex flex-col items-center pointer-events-none">
+            <div class="bg-slate-950/85 text-white font-bold text-[10px] sm:text-[11px] px-1.5 py-0.2 rounded shadow backdrop-blur-xs whitespace-nowrap border border-white/20 leading-tight">
+              ${j.tNom}
+            </div>
+            <div class="text-[9px] font-medium text-emerald-200/75 bg-slate-950/60 px-1 py-0 rounded mt-0.5 whitespace-nowrap leading-none border border-emerald-500/20"
+                 style="opacity: 0.72;"
+                 title="Suplente de puesto">
+              #${j.sNum} ${j.sNom}
+            </div>
+          </div>
+        `;
+
+        token.addEventListener('click', () => {
+          if (!token.classList.contains('has-dragged')) {
+            abrirModalEdicion(j.id);
+          }
+        });
+
+        capa.appendChild(token);
+      });
+    }
+
+    function renderizarPanelJugadores() {
+      const panel = document.getElementById('lista-jugadores-panel');
+      panel.innerHTML = '';
+
+      equipoActual.jugadores.forEach(j => {
+        const item = document.createElement('div');
+        item.className = 'bg-slate-950/70 border border-slate-800 rounded-lg p-2.5 flex items-center justify-between hover:border-slate-700 transition-colors';
+        const badgeColor = j.isPortero ? 'bg-sky-500/20 text-sky-300 border-sky-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30';
+
+        item.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${badgeColor} shrink-0">${j.pos}</span>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-white truncate flex items-center gap-1.5">
+                <span class="text-red-400 font-mono text-[11px]">#${j.tNum}</span>
+                <span class="truncate">${j.tNom}</span>
+                <span class="text-[9px] text-red-400 uppercase font-semibold">(Titular)</span>
+              </div>
+              <div class="text-[11px] text-slate-400 truncate flex items-center gap-1 mt-0.5 opacity-75">
+                <i class="fa-solid fa-arrow-turn-down text-[9px] text-sky-400 mr-0.5"></i>
+                <span class="font-mono text-[10px] text-sky-300">#${j.sNum}</span>
+                <span class="truncate">${j.sNom}</span>
+                <span class="text-[9px] text-slate-500">(Suplente)</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0 ml-2">
+            <button onclick="intercambiarTitularSuplente(${j.id})" title="Hacer cambio" class="w-7 h-7 bg-slate-800 hover:bg-sky-600 text-slate-300 hover:text-white rounded flex items-center justify-center text-xs transition-all">
+              <i class="fa-solid fa-repeat"></i>
+            </button>
+            <button onclick="abrirModalEdicion(${j.id})" title="Editar nombres" class="w-7 h-7 bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white rounded flex items-center justify-center text-xs transition-all">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          </div>
+        `;
+        panel.appendChild(item);
+      });
+    }
+
+    function configurarDragAndDrop() {
+      const cancha = document.getElementById('cancha');
+
+      cancha.addEventListener('pointerdown', (e) => {
+        const token = e.target.closest('.player-token');
+        if (!token) return;
+
+        draggingJugador = token;
+        draggingJugador.classList.add('dragging');
+        draggingJugador.classList.remove('has-dragged');
+
+        const tokenRect = token.getBoundingClientRect();
+        dragOffset.x = e.clientX - (tokenRect.left + tokenRect.width / 2);
+        dragOffset.y = e.clientY - (tokenRect.top + tokenRect.height / 2);
+
+        token.setPointerCapture(e.pointerId);
+      });
+
+      cancha.addEventListener('pointermove', (e) => {
+        if (!draggingJugador) return;
+        draggingJugador.classList.add('has-dragged');
+
+        const rect = cancha.getBoundingClientRect();
+        let pctX = ((e.clientX - dragOffset.x - rect.left) / rect.width) * 100;
+        let pctY = ((e.clientY - dragOffset.y - rect.top) / rect.height) * 100;
+
+        pctX = Math.max(8, Math.min(92, pctX));
+        pctY = Math.max(7, Math.min(92, pctY));
+
+        draggingJugador.style.left = `${pctX}%`;
+        draggingJugador.style.top = `${pctY}%`;
+
+        const id = parseInt(draggingJugador.dataset.id);
+        const j = equipoActual.jugadores.find(item => item.id === id);
+        if (j) {
+          j.x = Math.round(pctX);
+          j.y = Math.round(pctY);
+        }
+      });
+
+      const finalizarArrastre = () => {
+        if (!draggingJugador) return;
+        draggingJugador.classList.remove('dragging');
+        guardarEnLocalStorage();
+        draggingJugador = null;
       };
 
-      const DEFAULT_ROSTER = [
-        { id: "p1", number: "1", name: "Kechoman" },
-        { id: "p2", number: "2", name: "Fercho" },
-        { id: "p3", number: "6", name: "Ruben" },
-        { id: "p4", number: "4", name: "Nico" },
-        { id: "p5", number: "8", name: "Ivan" },
-        { id: "p6", number: "10", name: "Sergio" },
-        { id: "p7", number: "7", name: "Camilo" },
-        { id: "p8", number: "9", name: "Estiben" },
-        { id: "p9", number: "11", name: "Brandon" },
-        { id: "p10", number: "5", name: "Cristian" },
-        { id: "p11", number: "14", name: "Daniel" },
-        { id: "p12", number: "15", name: "Fredy" }
-      ];
+      cancha.addEventListener('pointerup', finalizarArrastre);
+      cancha.addEventListener('pointercancel', finalizarArrastre);
+    }
 
-      let state = loadState();
-      let swapMode = false;
-      let selectedSlotIndex = null;
+    function aplicarFormacion(formacionClave) {
+      if (!formacionesPlantillas[formacionClave]) return;
+      equipoActual.formacionClave = formacionClave;
 
-      function loadState() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) return JSON.parse(raw);
-        } catch (e) {}
-        return {
-          formation: "1-3-3-1",
-          roster: DEFAULT_ROSTER.slice(),
-          lineupIds: DEFAULT_ROSTER.slice(0, 8).map(function (p) { return p.id; })
-        };
+      const plantilla = formacionesPlantillas[formacionClave];
+      equipoActual.jugadores.forEach((j, index) => {
+        if (plantilla[index]) {
+          j.x = plantilla[index].x;
+          j.y = plantilla[index].y;
+          j.pos = plantilla[index].pos;
+        }
+      });
+
+      renderizarTodo();
+      guardarEnLocalStorage();
+      mostrarToast(`Formación ${formacionClave} aplicada`);
+    }
+
+    function reiniciarPosiciones() {
+      aplicarFormacion(equipoActual.formacionClave);
+    }
+
+    function intercambiarTitularSuplente(id) {
+      const j = equipoActual.jugadores.find(item => item.id === id);
+      if (!j) return;
+
+      const tempNom = j.tNom;
+      const tempNum = j.tNum;
+      j.tNom = j.sNom;
+      j.tNum = j.sNum;
+      j.sNom = tempNom;
+      j.sNum = tempNum;
+
+      renderizarTodo();
+      guardarEnLocalStorage();
+      mostrarToast(`Cambio: Entra #${j.tNum} ${j.tNom}`);
+    }
+
+    function abrirModalEdicion(id) {
+      const j = equipoActual.jugadores.find(item => item.id === id);
+      if (!j) return;
+
+      jugadorEnEdicion = j;
+      document.getElementById('modal-pos-tag').textContent = j.pos;
+      document.getElementById('edit-pos-nombre').value = j.pos;
+      document.getElementById('edit-titular-nombre').value = j.tNom;
+      document.getElementById('edit-titular-numero').value = j.tNum;
+      document.getElementById('edit-suplente-nombre').value = j.sNom;
+      document.getElementById('edit-suplente-numero').value = j.sNum;
+
+      document.getElementById('modal-edicion').classList.remove('hidden');
+    }
+
+    function cerrarModalEdicion() {
+      document.getElementById('modal-edicion').classList.add('hidden');
+      jugadorEnEdicion = null;
+    }
+
+    function guardarEdicionJugador() {
+      if (!jugadorEnEdicion) return;
+
+      jugadorEnEdicion.pos = document.getElementById('edit-pos-nombre').value.toUpperCase().trim() || jugadorEnEdicion.pos;
+      jugadorEnEdicion.tNom = document.getElementById('edit-titular-nombre').value.trim() || jugadorEnEdicion.tNom;
+      jugadorEnEdicion.tNum = parseInt(document.getElementById('edit-titular-numero').value) || jugadorEnEdicion.tNum;
+      jugadorEnEdicion.sNom = document.getElementById('edit-suplente-nombre').value.trim() || jugadorEnEdicion.sNom;
+      jugadorEnEdicion.sNum = parseInt(document.getElementById('edit-suplente-numero').value) || jugadorEnEdicion.sNum;
+
+      cerrarModalEdicion();
+      renderizarTodo();
+      guardarEnLocalStorage();
+      mostrarToast('Jugador actualizado');
+    }
+
+    function actualizarNombreEquipo(nombre) {
+      equipoActual.club = nombre.trim() || 'Legión FC';
+      guardarEnLocalStorage();
+    }
+
+    function copiarAlPortapapeles() {
+      const dataStr = JSON.stringify(equipoActual);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(dataStr).then(() => {
+          mostrarToast('¡Código copiado al portapapeles!');
+        }).catch(() => fallbackCopiar(dataStr));
+      } else {
+        fallbackCopiar(dataStr);
       }
+    }
 
-      function saveState() {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (e) {}
+    function fallbackCopiar(texto) {
+      const ta = document.createElement('textarea');
+      ta.value = texto;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      mostrarToast('¡Código copiado!');
+    }
+
+    function abrirModalPegar() {
+      document.getElementById('texto-codigo-pegar').value = '';
+      document.getElementById('modal-pegar').classList.remove('hidden');
+    }
+
+    function cerrarModalPegar() {
+      document.getElementById('modal-pegar').classList.add('hidden');
+    }
+
+    function aplicarCodigoPegado() {
+      const raw = document.getElementById('texto-codigo-pegar').value.trim();
+      if (!raw) return;
+
+      try {
+        const obj = JSON.parse(raw);
+        if (obj && Array.isArray(obj.jugadores) && obj.jugadores.length === 8) {
+          equipoActual = obj;
+          cerrarModalPegar();
+          renderizarTodo();
+          guardarEnLocalStorage();
+          mostrarToast('¡Formación cargada!');
+        } else {
+          alert('El formato no corresponde a Fútbol 8.');
+        }
+      } catch (err) {
+        alert('Código no válido.');
       }
+    }
 
-      function getPlayerById(id) {
-        return state.roster.find(function (p) { return p.id === id; }) || { id: id, number: "?", name: "Jugador" };
-      }
+    function exportarImagen() {
+      const cancha = document.getElementById('cancha');
+      mostrarToast('Generando foto...');
+      html2canvas(cancha, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#15803d'
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `legion_fc_alineacion.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        mostrarToast('Foto guardada');
+      });
+    }
 
-      function render() {
-        document.querySelectorAll("#formation-buttons .form-btn").forEach(function (btn) {
-          btn.classList.toggle("active", btn.getAttribute("data-formation") === state.formation);
-        });
+    function guardarEnLocalStorage() {
+      try {
+        localStorage.setItem('legion_fc_tactica_v', JSON.stringify(equipoActual));
+      } catch (e) {}
+    }
 
-        const pitch = document.getElementById("pitch");
-        pitch.querySelectorAll(".player-token").forEach(function (el) { el.remove(); });
-
-        const coords = FORMATIONS[state.formation] || FORMATIONS["1-3-3-1"];
-        coords.forEach(function (slot, idx) {
-          const player = getPlayerById(state.lineupIds[idx]);
-          const token = document.createElement("div");
-          token.className = "player-token";
-          token.style.left = slot.x + "%";
-          token.style.top = slot.y + "%";
-
-          const circle = document.createElement("div");
-          circle.className = "token-circle" + (slot.gk ? " gk" : "");
-          circle.textContent = player.number;
-          if (selectedSlotIndex === idx) {
-            circle.style.outline = "3px solid #facc15";
+    function cargarDeLocalStorage() {
+      try {
+        const guardado = localStorage.getItem('legion_fc_tactica_v');
+        if (guardado) {
+          const parsed = JSON.parse(guardado);
+          if (parsed && parsed.jugadores && parsed.jugadores.length === 8) {
+            equipoActual = parsed;
           }
+        }
+      } catch (e) {}
+    }
 
-          const label = document.createElement("div");
-          label.className = "token-label";
-          label.textContent = slot.role + " · " + player.name;
+    function cambiarTab(tab) {
+      const cCancha = document.getElementById('contenedor-cancha');
+      const cSuplentes = document.getElementById('contenedor-suplentes');
+      const btnCancha = document.getElementById('tab-cancha');
+      const btnSuplentes = document.getElementById('tab-suplentes');
 
-          token.appendChild(circle);
-          token.appendChild(label);
-
-          token.addEventListener("click", function () {
-            if (swapMode) {
-              if (selectedSlotIndex === null) {
-                selectedSlotIndex = idx;
-                document.getElementById("helper-text").textContent = "Selecciona otro jugador en cancha o banca para intercambiar.";
-                render();
-              } else if (selectedSlotIndex === idx) {
-                selectedSlotIndex = null;
-                render();
-              } else {
-                const tmp = state.lineupIds[selectedSlotIndex];
-                state.lineupIds[selectedSlotIndex] = state.lineupIds[idx];
-                state.lineupIds[idx] = tmp;
-                selectedSlotIndex = null;
-                saveState();
-                render();
-              }
-            } else {
-              const newName = prompt("Nombre del jugador:", player.name);
-              if (newName === null) return;
-              const newNum = prompt("Número de camiseta:", player.number);
-              if (newNum === null) return;
-              player.name = newName.trim() || player.name;
-              player.number = newNum.trim() || player.number;
-              saveState();
-              render();
-            }
-          });
-
-          pitch.appendChild(token);
-        });
-
-        const benchEl = document.getElementById("bench-list");
-        benchEl.innerHTML = "";
-        const benchPlayers = state.roster.filter(function (p) {
-          return state.lineupIds.indexOf(p.id) === -1;
-        });
-
-        benchPlayers.forEach(function (bp) {
-          const chip = document.createElement("button");
-          chip.type = "button";
-          chip.className = "bench-chip";
-          chip.textContent = "#" + bp.number + " " + bp.name;
-          chip.addEventListener("click", function () {
-            if (selectedSlotIndex !== null) {
-              state.lineupIds[selectedSlotIndex] = bp.id;
-              selectedSlotIndex = null;
-              saveState();
-              render();
-            } else {
-              const slotToReplace = prompt("¿Qué posición (1 a 8, de atrás hacia adelante) quieres reemplazar con " + bp.name + "?", "2");
-              const posIdx = Number(slotToReplace) - 1;
-              if (!isNaN(posIdx) && posIdx >= 0 && posIdx < state.lineupIds.length) {
-                state.lineupIds[posIdx] = bp.id;
-                saveState();
-                render();
-              }
-            }
-          });
-          benchEl.appendChild(chip);
-        });
+      if (tab === 'cancha') {
+        cCancha.classList.remove('hidden');
+        cSuplentes.classList.add('hidden');
+        btnCancha.className = "flex-1 py-2 text-center text-red-400 border-b-2 border-red-400 flex items-center justify-center gap-1.5";
+        btnSuplentes.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5";
+      } else {
+        cCancha.classList.add('hidden');
+        cSuplentes.classList.remove('hidden');
+        btnSuplentes.className = "flex-1 py-2 text-center text-red-400 border-b-2 border-red-400 flex items-center justify-center gap-1.5";
+        btnCancha.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5";
       }
+    }
 
-      document.querySelectorAll("#formation-buttons .form-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          state.formation = btn.getAttribute("data-formation");
-          selectedSlotIndex = null;
-          saveState();
-          render();
-        });
-      });
+    function mostrarToast(mensaje) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-mensaje').textContent = mensaje;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
 
-      document.getElementById("btn-swap-mode").addEventListener("click", function () {
-        swapMode = !swapMode;
-        selectedSlotIndex = null;
-        this.textContent = swapMode ? "Modo: Intercambiar posiciones (ON)" : "Modo: Tocar para editar";
-        document.getElementById("helper-text").textContent = swapMode
-          ? "Toca dos jugadores en cancha o un titular y un suplente para cambiarlos."
-          : "Toca un jugador en la cancha para cambiar su nombre o dorsal.";
-        render();
-      });
-
-      document.getElementById("btn-reset-squad").addEventListener("click", function () {
-        state = {
-          formation: "1-3-3-1",
-          roster: DEFAULT_ROSTER.slice(),
-          lineupIds: DEFAULT_ROSTER.slice(0, 8).map(function (p) { return p.id; })
-        };
-        selectedSlotIndex = null;
-        saveState();
-        render();
-      });
-
-      render();
-    })();
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
   </script>
 </body>
 </html>
