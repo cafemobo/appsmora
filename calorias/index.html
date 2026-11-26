@@ -1558,28 +1558,76 @@
         updateSyncPillUI(getSyncUrl() ? "Drive: Activo" : "Drive: Sin URL", getSyncUrl() ? "ok" : "warn");
       }
 
-      function mergeRemoteMeals(remoteList) {
-        if (!Array.isArray(remoteList) || remoteList.length === 0) {
-          renderDashboard();
-          return;
+      function mergeRemoteProfiles(remoteProfiles) {
+        if (!remoteProfiles || typeof remoteProfiles !== "object") return;
+        let changed = false;
+        ["carlos", "angela"].forEach(function (pid) {
+          const rp = remoteProfiles[pid];
+          if (!rp || typeof rp !== "object") return;
+          const cur = profilesMap[pid] || DEFAULT_PROFILES[pid];
+          profilesMap[pid] = {
+            id: pid,
+            name: String(rp.name || cur.name || pid).trim() || cur.name,
+            sex: String(rp.sex || cur.sex || "male"),
+            age: Number(rp.age) || cur.age,
+            height: Number(rp.height) || cur.height,
+            weight: Number(rp.weight) || cur.weight,
+            activity: Number(rp.activity) || cur.activity,
+            goalType: String(rp.goalType || cur.goalType || "maintenance")
+          };
+          changed = true;
+        });
+        if (changed) {
+          saveJSON(LS_KEYS.PROFILES, profilesMap);
+          renderProfilePills();
         }
+      }
 
-        const mergedById = {};
-        allMeals.forEach(function (m) {
-          if (m && m.id) mergedById[m.id] = normalizeMealRecord(m, m);
+      function mergeRemoteWaterLogs(remoteWaterList) {
+        if (!Array.isArray(remoteWaterList)) return;
+        const byId = {};
+        allWaterLogs.forEach(function (w) {
+          if (w && w.id) byId[w.id] = w;
         });
+        remoteWaterList.forEach(function (rw) {
+          if (!rw || !rw.id) return;
+          const id = String(rw.id).trim();
+          byId[id] = {
+            id: id,
+            profileId: String(rw.profileId || "carlos").trim().toLowerCase() || "carlos",
+            date: normalizeDateLocal(rw.date) || getTodayISO(),
+            time: normalizeTimeLocal(rw.time),
+            ml: Math.max(0, Math.round(Number(rw.ml) || 0))
+          };
+        });
+        allWaterLogs = Object.keys(byId).map(function (k) { return byId[k]; });
+        saveJSON(LS_KEYS.WATER, allWaterLogs);
+      }
 
-        remoteList.forEach(function (remote) {
-          if (!remote || !remote.id) return;
-          const id = String(remote.id).trim();
-          const existingLocal = mergedById[id];
-          mergedById[id] = normalizeMealRecord(remote, existingLocal);
-        });
+      function mergeRemotePayload(data) {
+        if (!data || typeof data !== "object") return;
+        if (data.profiles) mergeRemoteProfiles(data.profiles);
+        if (Array.isArray(data.waterLogs)) mergeRemoteWaterLogs(data.waterLogs);
 
-        allMeals = Object.keys(mergedById).map(function (k) {
-          return mergedById[k];
-        });
-        persistMealsSafely(allMeals, true);
+        const remoteList = data.meals;
+        if (Array.isArray(remoteList) && remoteList.length > 0) {
+          const mergedById = {};
+          allMeals.forEach(function (m) {
+            if (m && m.id) mergedById[m.id] = normalizeMealRecord(m, m);
+          });
+
+          remoteList.forEach(function (remote) {
+            if (!remote || !remote.id) return;
+            const id = String(remote.id).trim();
+            const existingLocal = mergedById[id];
+            mergedById[id] = normalizeMealRecord(remote, existingLocal);
+          });
+
+          allMeals = Object.keys(mergedById).map(function (k) {
+            return mergedById[k];
+          });
+          persistMealsSafely(allMeals, true);
+        }
         renderDashboard();
       }
 
@@ -1630,9 +1678,9 @@
           const res = await fetch(syncUrl + sep + "action=list", { method: "GET", redirect: "follow" });
           const data = await res.json();
           if (data && data.ok && Array.isArray(data.meals)) {
-            mergeRemoteMeals(data.meals);
+            mergeRemotePayload(data);
             updateSyncPillUI("Drive: Sincronizado", "ok");
-            if (!silent) showToast("Registros descargados desde Drive (" + data.meals.length + ").", "success");
+            if (!silent) showToast("Sincronizado desde Drive (" + data.meals.length + " comidas, perfiles y agua).", "success");
             return;
           }
           throw new Error("Respuesta inválida");
@@ -1640,9 +1688,9 @@
           try {
             const jsonpData = await pullMealsViaJsonp(syncUrl);
             if (jsonpData && jsonpData.ok && Array.isArray(jsonpData.meals)) {
-              mergeRemoteMeals(jsonpData.meals);
+              mergeRemotePayload(jsonpData);
               updateSyncPillUI("Drive: Sincronizado", "ok");
-              if (!silent) showToast("Registros descargados desde Drive (" + jsonpData.meals.length + ").", "success");
+              if (!silent) showToast("Sincronizado desde Drive (" + jsonpData.meals.length + " comidas, perfiles y agua).", "success");
               return;
             }
           } catch (jsonpErr) {}
@@ -1695,19 +1743,85 @@
         }
       }
 
+      async function pushProfileToDrive(profileObj) {
+        const syncUrl = getSyncUrl();
+        if (!syncUrl || !navigator.onLine || !profileObj) return false;
+        try {
+          await fetch(syncUrl, {
+            method: "POST",
+            mode: "no-cors",
+            redirect: "follow",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              pin: APP_PIN,
+              action: "upsert_profile",
+              profile: {
+                id: profileObj.id,
+                name: profileObj.name,
+                sex: profileObj.sex,
+                age: Number(profileObj.age) || 35,
+                height: Number(profileObj.height) || 170,
+                weight: Number(profileObj.weight) || 70,
+                activity: Number(profileObj.activity) || 1.55,
+                goalType: profileObj.goalType || "maintenance"
+              }
+            })
+          });
+          updateSyncPillUI("Drive: Sincronizado", "ok");
+          return true;
+        } catch (err) {
+          return false;
+        }
+      }
+
+      async function pushWaterToDrive(waterObj, actionType) {
+        const syncUrl = getSyncUrl();
+        if (!syncUrl || !navigator.onLine || !waterObj) return false;
+        try {
+          await fetch(syncUrl, {
+            method: "POST",
+            mode: "no-cors",
+            redirect: "follow",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              pin: APP_PIN,
+              action: actionType || "upsert_water",
+              id: waterObj.id,
+              water: {
+                id: waterObj.id,
+                profileId: waterObj.profileId || "carlos",
+                date: normalizeDateLocal(waterObj.date) || waterObj.date,
+                time: normalizeTimeLocal(waterObj.time),
+                ml: Number(waterObj.ml) || 0
+              }
+            })
+          });
+          updateSyncPillUI("Drive: Sincronizado", "ok");
+          return true;
+        } catch (err) {
+          return false;
+        }
+      }
+
       async function syncAllMealsToDrive() {
         const syncUrl = getSyncUrl();
         if (!syncUrl) { showToast("Configura primero la URL de Google Apps Script en Perfil.", "warning"); return; }
         if (!navigator.onLine) { showToast("Sin conexión a internet.", "warning"); return; }
 
         updateSyncPillUI("Drive: Subiendo...", "warn");
+        for (const pid of ["carlos", "angela"]) {
+          if (profilesMap[pid]) await pushProfileToDrive(profilesMap[pid]);
+        }
         let sent = 0;
         for (let i = 0; i < allMeals.length; i++) {
           if (await pushMealToDrive(allMeals[i], "upsert")) sent++;
         }
+        for (let j = 0; j < allWaterLogs.length; j++) {
+          await pushWaterToDrive(allWaterLogs[j], "upsert_water");
+        }
         await pullMealsFromDrive(true);
         renderDashboard();
-        showToast("Sincronización completa (" + sent + " enviados).", "success");
+        showToast("Sincronización completa (" + sent + " comidas, perfiles y agua).", "success");
       }
 
       function getEffectiveApiKey() {
@@ -2130,6 +2244,7 @@
         };
         allWaterLogs.push(entry);
         saveJSON(LS_KEYS.WATER, allWaterLogs);
+        pushWaterToDrive(entry, "upsert_water");
         renderWaterTracker();
         showToast("+" + cleanMl + " ml de agua (" + getCurrentProfile().name + ")", "success");
       }
@@ -2141,6 +2256,7 @@
           if ((item.profileId || "carlos") === activeProfileId && normalizeDateLocal(item.date) === normDate) {
             const removed = allWaterLogs.splice(i, 1)[0];
             saveJSON(LS_KEYS.WATER, allWaterLogs);
+            pushWaterToDrive(removed, "delete_water");
             renderWaterTracker();
             showToast("Se eliminó registro de " + removed.ml + " ml", "info");
             return;
@@ -2704,8 +2820,12 @@
           closeProfileModal();
           renderProfilePills();
           renderDashboard();
-          if (getSyncUrl()) pullMealsFromDrive(true);
-          showToast("Perfil de " + updated.name + " guardado", "success");
+          if (getSyncUrl()) {
+            pushProfileToDrive(updated).then(function () {
+              pullMealsFromDrive(true);
+            });
+          }
+          showToast("Perfil de " + updated.name + " guardado y sincronizado", "success");
         });
 
         document.getElementById("date-filter").addEventListener("change", function (e) { if (e.target.value) { selectedDate = e.target.value; renderDashboard(); } });
